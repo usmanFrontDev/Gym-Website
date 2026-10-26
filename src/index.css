@@ -1,0 +1,32 @@
+@import 'tailwindcss';
+
+/* Yellow + black theme tokens. Components use these tokens only. */
+@theme {
+  --color-primary: #facc15;
+  --color-primary-hover: #eab308;
+  --color-primary-foreground: #0a0a0a;
+
+  --color-background: #0a0a0a;
+  --color-surface: #141414;
+  --color-surface-raised: #1f1f1f;
+  --color-border: #2e2e2e;
+
+  --color-foreground: #fafafa;
+  --color-muted: #a3a3a3;
+
+  --color-success: #22c55e;
+  --color-danger: #ef4444;
+  --color-warning: #f59e0b;
+
+  --radius-card: 0.75rem;
+  --font-sans: 'Inter', system-ui, sans-serif;
+}
+
+@layer base {
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+  }
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-primary;
+  }
+}
