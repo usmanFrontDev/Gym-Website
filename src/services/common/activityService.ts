@@ -17,24 +17,24 @@ export const activityService = {
     return { rows: data as unknown as ActivityRow[], total: count ?? 0 }
   },
 
-  async latestWithin(seconds: number): Promise<ActivityRow | null> {
-    const since = new Date(Date.now() - seconds * 1000).toISOString()
+  async byId(id: string): Promise<ActivityRow | null> {
     const rows = unwrap(
       await supabase
         .from(Table.AttendanceLogs)
         .select('id, fingerprint_id, punched_at, status, member:members(full_name), profile:profiles(full_name)')
-        .gte('punched_at', since)
-        .order('punched_at', { ascending: false })
+        .eq('id', id)
         .limit(1),
     ) as unknown as ActivityRow[]
     return rows[0] ?? null
   },
 
-  /** Realtime: fires for every new punch. Returns an unsubscribe function. */
-  subscribe(onPunch: () => void): () => void {
+  /** Realtime: fires with the new row's id for every punch. Returns an unsubscribe function. */
+  subscribe(onPunch: (id: string) => void): () => void {
     const channel = supabase
       .channel('attendance-punches')
-      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: Table.AttendanceLogs }, onPunch)
+      .on<{ id: string }>('postgres_changes', { event: 'INSERT', schema: 'public', table: Table.AttendanceLogs }, (payload) =>
+        onPunch(payload.new.id),
+      )
       .subscribe()
     return () => {
       void supabase.removeChannel(channel)

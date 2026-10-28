@@ -80,6 +80,18 @@ export const memberStrings = {
   register: 'Register member',
 } as const
 
+export const enrollStrings = {
+  scan: 'Scan fingerprint',
+  rescan: 'Scan again',
+  cancel: 'Cancel scan',
+  placeholder: 'Not scanned yet',
+  PENDING: 'Waiting for the scanner… If this does not change, check the bridge is running on the reception laptop.',
+  ENROLLING: 'Place the same finger on the scanner 3 times.',
+  CANCELLED: 'Scan cancelled.',
+  failed: 'Scan failed. Please try again.',
+  saved: (id: string) => `Fingerprint saved as ID ${id}.`,
+} as const
+
 export const expenseLabels = {
   RENT: 'Rent', ELECTRICITY: 'Electricity', SALARIES: 'Salaries', EQUIPMENT: 'Equipment', MAINTENANCE: 'Maintenance', OTHER: 'Other',
 } as const

@@ -30,14 +30,14 @@ export function RecentActivityTable() {
     { key: 'status', header: 'Status', render: (r) => <StatusBadge status={r.status} /> },
   ]
 
-  const handleEnableSound = () => setSoundEnabled(enableAlertSound())
+  const handleToggleSound = () => setSoundEnabled(soundEnabled ? false : enableAlertSound())
 
   return (
     <section aria-labelledby="activity-heading" className="flex flex-col gap-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h2 id="activity-heading" className="text-lg font-bold">Recent activity</h2>
-        <Button variant={soundEnabled ? 'secondary' : 'outline'} size="sm" onClick={handleEnableSound} disabled={soundEnabled}>
-          {soundEnabled ? 'Sound on' : 'Enable sound'}
+        <Button variant={soundEnabled ? 'secondary' : 'outline'} size="sm" onClick={handleToggleSound} aria-pressed={soundEnabled}>
+          {soundEnabled ? 'Sound on (click to mute)' : 'Enable sound'}
         </Button>
       </div>
       {card && (

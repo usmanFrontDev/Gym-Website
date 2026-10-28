@@ -18,4 +18,5 @@ export enum QueryKey {
   Expenses = 'expenses',
   ExpenseSummary = 'expense-summary',
   Payouts = 'payouts',
+  DeviceEnrollment = 'device-enrollment',
 }

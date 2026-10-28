@@ -24,6 +24,11 @@ describe('registerMemberSchema', () => {
     const ok = registerMemberSchema.safeParse({ ...valid, plan_code: 'TRAINER_8000', amount: 8000, trainer_id: 't1', commission: 3000 })
     expect(ok.success).toBe(true)
   })
+  it('requires a scanned fingerprint', () => {
+    const result = registerMemberSchema.safeParse({ ...valid, fingerprint_id: '' })
+    expect(result.success).toBe(false)
+    expect(result.error?.issues[0].path).toEqual(['fingerprint_id'])
+  })
   it('rejects a bad phone number', () => {
     expect(registerMemberSchema.safeParse({ ...valid, phone: 'abc' }).success).toBe(false)
   })

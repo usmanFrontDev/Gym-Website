@@ -1,12 +1,21 @@
 import { create } from 'zustand'
+import { persist } from 'zustand/middleware'
 
 interface UiState {
   soundEnabled: boolean
   setSoundEnabled: (enabled: boolean) => void
 }
 
-/** Sound is per page load: it only plays in the session where "Enable sound" was clicked. */
-export const useUiStore = create<UiState>((set) => ({
-  soundEnabled: false,
-  setSoundEnabled: (soundEnabled) => set({ soundEnabled }),
-}))
+/**
+ * The sound choice is remembered on this browser (the reception laptop). Browsers still block audio
+ * after a reload until the first click or key press, which unlocks it (see useActivityRealtime).
+ */
+export const useUiStore = create<UiState>()(
+  persist(
+    (set) => ({
+      soundEnabled: false,
+      setSoundEnabled: (soundEnabled) => set({ soundEnabled }),
+    }),
+    { name: 'gym-ui', partialize: (s) => ({ soundEnabled: s.soundEnabled }) },
+  ),
+)

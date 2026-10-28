@@ -9,6 +9,7 @@ export enum Table {
   TrainerPayouts = 'trainer_payouts',
   AttendanceLogs = 'attendance_logs',
   Expenses = 'expenses',
+  DeviceEnrollments = 'device_enrollments',
 }
 
 export enum Rpc {

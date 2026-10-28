@@ -12,7 +12,7 @@ const memberBase = z.object({
   email: optional(emailField),
   cnic: optional(cnicField),
   address: z.string().trim(),
-  fingerprint_id: z.string().trim(),
+  fingerprint_id: z.string().trim().min(1, "Scan the member's fingerprint first"),
 })
 
 const paymentBase = z.object({

@@ -3,6 +3,7 @@ import { useEffect } from 'react'
 import { useForm, useWatch } from 'react-hook-form'
 import { Button } from '@/components/common/Button'
 import { FormDatePicker } from '@/components/form/FormDatePicker'
+import { FormFingerprintEnroll } from '@/components/form/FormFingerprintEnroll'
 import { FormInput } from '@/components/form/FormInput'
 import { FormPhoneInput } from '@/components/form/FormPhoneInput'
 import { FormSelect } from '@/components/form/FormSelect'
@@ -60,7 +61,7 @@ export function RegisterMemberForm({ onRegistered }: RegisterMemberFormProps) {
         <FormPhoneInput control={control} name="emergency_contact" label="Emergency contact" />
         <FormInput control={control} name="email" label="Email (optional)" type="email" />
         <FormInput control={control} name="cnic" label="CNIC (optional)" />
-        <FormInput control={control} name="fingerprint_id" label="Fingerprint ID (device user ID)" />
+        <FormFingerprintEnroll control={control} name="fingerprint_id" label="Fingerprint ID (device user ID)" />
         <FormTextarea control={control} name="address" label="Address" />
       </fieldset>
 
