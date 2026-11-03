@@ -7,7 +7,7 @@ export default function DashboardPage() {
   return (
     <PageContainer title={strings.nav.dashboard}>
       <ManagerStatsCards />
-      <RecentActivityTable />
+      <RecentActivityTable showBridge />
     </PageContainer>
   )
 }

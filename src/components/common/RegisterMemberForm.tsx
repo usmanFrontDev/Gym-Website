@@ -8,11 +8,15 @@ import { FormInput } from '@/components/form/FormInput'
 import { FormPhoneInput } from '@/components/form/FormPhoneInput'
 import { FormSelect } from '@/components/form/FormSelect'
 import { FormTextarea } from '@/components/form/FormTextarea'
+import { Role } from '@/constants/roles'
 import { useRegisterMember, usePlans } from '@/hooks/common/useMembers'
+import { useGymSettings } from '@/hooks/common/useSettings'
 import { useTrainerOptions } from '@/hooks/common/useStaff'
 import { registerMemberSchema, type RegisterMemberValues } from '@/schemas/common/member.schema'
-import { DEFAULT_ADMISSION_FEE, TRAINER_PLANS, type PlanCode } from '@/utils/billing/plans'
-import { todayKarachi } from '@/utils/format'
+import { useAuthStore } from '@/stores/authStore'
+import { DEFAULT_ADMISSION_FEE } from '@/utils/billing/plans'
+import { effectivePrice } from '@/utils/billing/billing'
+import { formatPkr, todayKarachi } from '@/utils/format'
 import { PlanPreview } from './PlanPreview'
 
 interface RegisterMemberFormProps {
@@ -22,6 +26,8 @@ interface RegisterMemberFormProps {
 export function RegisterMemberForm({ onRegistered }: RegisterMemberFormProps) {
   const plans = usePlans()
   const trainers = useTrainerOptions()
+  const gym = useGymSettings()
+  const isOwner = useAuthStore((s) => s.user?.role === Role.SUPER_ADMIN)
   const register = useRegisterMember()
   const today = todayKarachi()
 
@@ -29,24 +35,30 @@ export function RegisterMemberForm({ onRegistered }: RegisterMemberFormProps) {
     resolver: zodResolver(registerMemberSchema),
     defaultValues: {
       full_name: '', father_name: '', phone: '', emergency_contact: '', email: '', cnic: '', address: '', fingerprint_id: '',
-      plan_code: 'MONTHLY', amount: 2500, admission_fee: DEFAULT_ADMISSION_FEE, discount: 0, start_date: today,
+      plan_code: 'MONTHLY', amount: 2500, admission_fee: DEFAULT_ADMISSION_FEE, discount: 0, monthly_discount: 0, start_date: today,
       trainer_id: '', commission: undefined,
     },
   })
-  const [planCode, amount, admissionFee, discount, startDate] = useWatch({
+  const [planCode, amount, admissionFee, discount, monthlyDiscount, startDate] = useWatch({
     control,
-    name: ['plan_code', 'amount', 'admission_fee', 'discount', 'start_date'],
+    name: ['plan_code', 'amount', 'admission_fee', 'discount', 'monthly_discount', 'start_date'],
   })
   const plan = plans.data?.find((p) => p.code === planCode)
-  const isTrainerPlan = TRAINER_PLANS.includes(planCode as PlanCode)
+  const isTrainerPlan = plan?.is_trainer_plan ?? false
+  const price = plan ? effectivePrice(plan, monthlyDiscount || 0) : 0
+  const defaultAdmissionFee = gym.data?.default_admission_fee
 
   useEffect(() => {
-    if (plan) setValue('amount', plan.price)
-  }, [plan, setValue])
+    if (plan) setValue('amount', price)
+  }, [plan, price, setValue])
+
+  useEffect(() => {
+    if (defaultAdmissionFee !== undefined) setValue('admission_fee', defaultAdmissionFee)
+  }, [defaultAdmissionFee, setValue])
 
   const handleRegister = (values: RegisterMemberValues) => {
     register.mutate(
-      { ...values, commission: values.commission ?? 0, start_date: values.start_date ?? '' },
+      { ...values, commission: values.commission ?? 0, monthly_discount: values.monthly_discount ?? 0, start_date: values.start_date ?? '' },
       { onSuccess: onRegistered },
     )
   }
@@ -71,11 +83,12 @@ export function RegisterMemberForm({ onRegistered }: RegisterMemberFormProps) {
           control={control}
           name="plan_code"
           label="Plan"
-          options={(plans.data ?? []).map((p) => ({ value: p.code, label: `${p.name} (Rs ${p.price})` }))}
+          options={(plans.data ?? []).filter((p) => p.active).map((p) => ({ value: p.code, label: `${p.name} (${formatPkr(effectivePrice(p, monthlyDiscount || 0))})` }))}
         />
         <FormInput control={control} name="amount" label="Amount paid (PKR)" asNumber />
         <FormInput control={control} name="admission_fee" label="Admission fee (0 allowed)" asNumber />
         <FormInput control={control} name="discount" label="Admission discount" asNumber />
+        {isOwner && <FormInput control={control} name="monthly_discount" label="Monthly discount (PKR off every month)" asNumber />}
         <FormDatePicker control={control} name="start_date" label="Start date" />
         {isTrainerPlan && (
           <>
@@ -100,7 +113,8 @@ export function RegisterMemberForm({ onRegistered }: RegisterMemberFormProps) {
         )}
         <div className="md:col-span-2">
           <PlanPreview
-            plan={(planCode || 'MONTHLY') as PlanCode}
+            price={price}
+            monthsPerPeriod={plan ? plan.months : 1}
             payment={amount || 0}
             credit={0}
             anchorDate={startDate || today}

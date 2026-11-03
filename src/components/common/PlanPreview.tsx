@@ -1,9 +1,10 @@
-import { applyPayment } from '@/utils/billing/billing'
-import { PLAN_MONTHS, type PlanCode } from '@/utils/billing/plans'
+import { applyPaymentAtPrice } from '@/utils/billing/billing'
 import { formatDate, formatPkr } from '@/utils/format'
 
 interface PlanPreviewProps {
-  plan: PlanCode
+  /** What one paid period costs this member (already discounted). */
+  price: number
+  monthsPerPeriod: number | null
   payment: number
   credit: number
   anchorDate: string
@@ -12,11 +13,11 @@ interface PlanPreviewProps {
 }
 
 /** UI preview only. The Postgres RPC computes the final state. */
-export function PlanPreview({ plan, payment, credit, anchorDate, monthsAlreadyCovered, admissionCharged }: PlanPreviewProps) {
+export function PlanPreview({ price, monthsPerPeriod, payment, credit, anchorDate, monthsAlreadyCovered, admissionCharged }: PlanPreviewProps) {
   let body: string
   try {
-    const result = applyPayment({ plan, payment, credit, anchorDate, monthsAlreadyCovered })
-    const monthsPer = PLAN_MONTHS[plan]
+    const result = applyPaymentAtPrice({ price, monthsPerPeriod, payment, credit, anchorDate, monthsAlreadyCovered })
+    const monthsPer = monthsPerPeriod
     body =
       monthsPer === null
         ? 'Lifetime: never expires'

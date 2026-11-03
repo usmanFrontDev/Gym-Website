@@ -1,3 +1,4 @@
+import { Search } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useDebounce } from '@/hooks/common/useDebounce'
 
@@ -19,14 +20,15 @@ export function SearchInput({ value, onChange, label, placeholder }: SearchInput
   }, [debounced])
 
   return (
-    <label className="block">
+    <label className="relative block">
       <span className="sr-only">{label}</span>
+      <Search aria-hidden="true" size={16} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted" />
       <input
         type="search"
         value={text}
         onChange={(e) => setText(e.target.value)}
         placeholder={placeholder ?? label}
-        className="h-10 w-full rounded-lg border border-border bg-surface px-3 text-foreground placeholder:text-muted"
+        className="h-11 w-full rounded-lg border border-border bg-surface pl-9 pr-3 text-foreground transition-colors placeholder:text-muted hover:border-border-strong focus:border-primary"
       />
     </label>
   )

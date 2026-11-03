@@ -2,8 +2,10 @@ import { describe, expect, it } from 'vitest'
 import {
   addMonthsFromAnchor,
   applyPayment,
+  applyPaymentAtPrice,
   computeAdmissionFee,
   computeMembershipStatus,
+  effectivePrice,
   resumeFromFreeze,
 } from './billing'
 import { PLAN_PRICE } from './plans'
@@ -110,5 +112,37 @@ describe('computeAdmissionFee', () => {
   it('discount applies to admission fee only and never goes below 0', () => {
     expect(computeAdmissionFee({ defaultFee: 1000, discount: 300, lastExpiry: null, today: '2025-06-01' })).toBe(700)
     expect(computeAdmissionFee({ defaultFee: 1000, discount: 5000, lastExpiry: null, today: '2025-06-01' })).toBe(0)
+  })
+})
+
+describe('monthly discount', () => {
+  it('takes the discount off every month of a plan', () => {
+    expect(effectivePrice({ price: 2500, months: 1 }, 500)).toBe(2000)
+    expect(effectivePrice({ price: 12500, months: 6 }, 500)).toBe(9500)
+  })
+
+  it('never discounts lifetime and never goes below 1', () => {
+    expect(effectivePrice({ price: 60000, months: null }, 500)).toBe(60000)
+    expect(effectivePrice({ price: 2500, months: 1 }, 9999)).toBe(1)
+  })
+
+  it('applies the credit model at the discounted price: 5000 at 2000/month = 2 months + 1000 credit', () => {
+    const result = applyPaymentAtPrice({
+      price: 2000, monthsPerPeriod: 1, payment: 5000, credit: 0, anchorDate: '2026-03-10', monthsAlreadyCovered: 0,
+    })
+    expect(result).toEqual({ periods: 2, coveredMonths: 2, credit: 1000, dueDate: '2026-05-10' })
+  })
+
+  it('a custom plan works the same way: 7000 for 3 months, paid in full', () => {
+    const result = applyPaymentAtPrice({
+      price: 7000, monthsPerPeriod: 3, payment: 7000, credit: 0, anchorDate: '2026-01-31', monthsAlreadyCovered: 0,
+    })
+    expect(result).toMatchObject({ periods: 1, coveredMonths: 3, credit: 0, dueDate: '2026-04-30' })
+  })
+
+  it('requires the exact price for lifetime plans', () => {
+    expect(() =>
+      applyPaymentAtPrice({ price: 60000, monthsPerPeriod: null, payment: 1000, credit: 0, anchorDate: '2026-03-10', monthsAlreadyCovered: 0 }),
+    ).toThrow('Lifetime requires exactly 60000')
   })
 })

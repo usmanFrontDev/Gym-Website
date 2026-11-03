@@ -8,7 +8,8 @@ import { FormSelect } from '@/components/form/FormSelect'
 import { usePlans, useRecordPayment } from '@/hooks/common/useMembers'
 import { recordPaymentSchema, type RecordPaymentValues } from '@/schemas/common/member.schema'
 import type { Membership } from '@/types/common/member.types'
-import { PLAN_MONTHS, type PlanCode } from '@/utils/billing/plans'
+import { effectivePrice } from '@/utils/billing/billing'
+import { formatPkr } from '@/utils/format'
 import { PlanPreview } from './PlanPreview'
 
 interface PaymentDialogProps {
@@ -18,9 +19,11 @@ interface PaymentDialogProps {
   membership: Membership | null
   /** True when the current plan has finished, so a different plan may be chosen. */
   canChangePlan: boolean
+  /** Fixed PKR off every month for this member (0 = none). */
+  monthlyDiscount: number
 }
 
-export function PaymentDialog({ open, onClose, memberId, membership, canChangePlan }: PaymentDialogProps) {
+export function PaymentDialog({ open, onClose, memberId, membership, canChangePlan, monthlyDiscount }: PaymentDialogProps) {
   const plans = usePlans()
   const record = useRecordPayment()
   const currentPlan = membership?.plan_code ?? 'MONTHLY'
@@ -30,9 +33,11 @@ export function PaymentDialog({ open, onClose, memberId, membership, canChangePl
   })
   const [planCode, amount, startDate] = useWatch({ control, name: ['plan_code', 'amount', 'start_date'] })
   const samePlan = planCode === membership?.plan_code
+  const selected = plans.data?.find((p) => p.code === planCode)
+  const price = selected ? effectivePrice(selected, monthlyDiscount) : 0
   const options = (plans.data ?? [])
-    .filter((p) => canChangePlan || p.code === membership?.plan_code)
-    .map((p) => ({ value: p.code, label: `${p.name} (Rs ${p.price})` }))
+    .filter((p) => (canChangePlan ? p.active || p.code === membership?.plan_code : p.code === membership?.plan_code))
+    .map((p) => ({ value: p.code, label: `${p.name} (${formatPkr(effectivePrice(p, monthlyDiscount))})` }))
 
   const handlePay = (values: RecordPaymentValues) => {
     record.mutate(
@@ -53,9 +58,15 @@ export function PaymentDialog({ open, onClose, memberId, membership, canChangePl
         <FormInput control={control} name="amount" label="Amount received (PKR)" asNumber />
         <FormInput control={control} name="discount" label="Admission discount (only if admission applies)" asNumber />
         <FormDatePicker control={control} name="start_date" label="Start date (optional, default continues the cycle)" />
-        {PLAN_MONTHS[planCode as PlanCode] !== undefined && (
+        {selected && monthlyDiscount > 0 && selected.months !== null && (
+          <p className="text-sm text-muted">
+            Monthly discount of {formatPkr(monthlyDiscount)} applied: {formatPkr(price)} per period.
+          </p>
+        )}
+        {selected && (
           <PlanPreview
-            plan={planCode as PlanCode}
+            price={price}
+            monthsPerPeriod={selected.months}
             payment={amount || 0}
             credit={samePlan ? (membership?.credit ?? 0) : 0}
             anchorDate={startDate || (samePlan && membership ? membership.anchor_date : (startDate || membership?.anchor_date || ''))}

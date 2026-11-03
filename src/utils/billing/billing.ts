@@ -31,10 +31,20 @@ export interface ApplyPaymentResult {
   dueDate: DateString | null
 }
 
-export function applyPayment(input: ApplyPaymentInput): ApplyPaymentResult {
-  const { plan, payment, credit, anchorDate, monthsAlreadyCovered } = input
-  const price = PLAN_PRICE[plan]
-  const monthsPerPeriod = PLAN_MONTHS[plan]
+export interface ApplyPaymentAtPriceInput {
+  /** What one paid period costs this member (after any monthly discount). */
+  price: number
+  /** Months covered by one period, null for lifetime. */
+  monthsPerPeriod: number | null
+  payment: number
+  credit: number
+  anchorDate: DateString
+  monthsAlreadyCovered: number
+}
+
+/** The credit model for any plan, built-in or added by the owner. Mirrors the Postgres RPC. */
+export function applyPaymentAtPrice(input: ApplyPaymentAtPriceInput): ApplyPaymentResult {
+  const { price, monthsPerPeriod, payment, credit, anchorDate, monthsAlreadyCovered } = input
 
   if (monthsPerPeriod === null) {
     if (payment !== price) throw new Error(`Lifetime requires exactly ${price}`)
@@ -50,6 +60,17 @@ export function applyPayment(input: ApplyPaymentInput): ApplyPaymentResult {
     credit: total - periods * price,
     dueDate: addMonthsFromAnchor(anchorDate, coveredMonths),
   }
+}
+
+/** Plan price for one member: price minus (monthly discount x months). Lifetime is never discounted. */
+export function effectivePrice(plan: { price: number; months: number | null }, monthlyDiscount: number): number {
+  if (plan.months === null) return plan.price
+  return Math.max(1, plan.price - monthlyDiscount * plan.months)
+}
+
+export function applyPayment(input: ApplyPaymentInput): ApplyPaymentResult {
+  const { plan, ...rest } = input
+  return applyPaymentAtPrice({ ...rest, price: PLAN_PRICE[plan], monthsPerPeriod: PLAN_MONTHS[plan] })
 }
 
 export interface MembershipStatusInput {

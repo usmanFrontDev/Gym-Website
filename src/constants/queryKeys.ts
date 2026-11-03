@@ -19,4 +19,8 @@ export enum QueryKey {
   ExpenseSummary = 'expense-summary',
   Payouts = 'payouts',
   DeviceEnrollment = 'device-enrollment',
+  BridgeStatus = 'bridge-status',
+  GymSettings = 'gym-settings',
+  DiscountMembers = 'discount-members',
+  AttendanceOverview = 'attendance-overview',
 }

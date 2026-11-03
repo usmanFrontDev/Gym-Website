@@ -10,6 +10,8 @@ export enum Table {
   AttendanceLogs = 'attendance_logs',
   Expenses = 'expenses',
   DeviceEnrollments = 'device_enrollments',
+  BridgeStatus = 'bridge_status',
+  GymSettings = 'gym_settings',
 }
 
 export enum Rpc {
@@ -28,6 +30,14 @@ export enum Rpc {
   ManagerStats = 'manager_stats',
   TrainerStats = 'trainer_stats',
   ExpenseSummary = 'expense_summary',
+  BridgeOverview = 'bridge_overview',
+  ListActivity = 'list_activity',
+  AttendanceOverview = 'attendance_overview',
+  MemberAttendance = 'member_attendance',
+  SetMemberDiscount = 'set_member_discount',
+  CreatePlan = 'create_plan',
+  UpdatePlan = 'update_plan',
+  UpdateMyProfile = 'update_my_profile',
 }
 
 export enum EdgeFunction {

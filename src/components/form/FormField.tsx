@@ -11,7 +11,7 @@ interface FormFieldProps {
 export function FormField({ id, label, error, children }: FormFieldProps) {
   return (
     <div className="flex flex-col gap-1.5">
-      <label htmlFor={id} className="text-sm font-medium text-foreground">
+      <label htmlFor={id} className="text-sm font-semibold text-foreground">
         {label}
       </label>
       {children}
@@ -25,4 +25,4 @@ export function FormField({ id, label, error, children }: FormFieldProps) {
 }
 
 export const inputStyles =
-  'h-10 w-full rounded-lg border border-border bg-surface-raised px-3 text-foreground placeholder:text-muted disabled:opacity-60 aria-[invalid=true]:border-danger'
+  'h-11 w-full rounded-lg border border-border bg-surface-raised px-3 text-foreground transition-colors placeholder:text-muted hover:border-border-strong focus:border-primary disabled:opacity-60 aria-[invalid=true]:border-danger'

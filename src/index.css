@@ -3,30 +3,61 @@
 /* Yellow + black theme tokens. Components use these tokens only. */
 @theme {
   --color-primary: #facc15;
-  --color-primary-hover: #eab308;
-  --color-primary-foreground: #0a0a0a;
+  --color-primary-hover: #fde047;
+  --color-primary-foreground: #09090b;
+  --color-primary-soft: rgb(250 204 21 / 0.12);
 
-  --color-background: #0a0a0a;
-  --color-surface: #141414;
-  --color-surface-raised: #1f1f1f;
-  --color-border: #2e2e2e;
+  --color-background: #09090b;
+  --color-surface: #111113;
+  --color-surface-raised: #1a1a1e;
+  --color-border: #27272c;
+  --color-border-strong: #3a3a42;
 
   --color-foreground: #fafafa;
-  --color-muted: #a3a3a3;
+  --color-muted: #a1a1aa;
 
   --color-success: #22c55e;
-  --color-danger: #ef4444;
-  --color-warning: #f59e0b;
+  --color-danger: #f87171;
+  --color-danger-strong: #dc2626;
+  --color-warning: #fb923c;
 
-  --radius-card: 0.75rem;
-  --font-sans: 'Inter', system-ui, sans-serif;
+  --radius-card: 1rem;
+  --font-sans: 'Barlow', system-ui, sans-serif;
+  --font-display: 'Barlow Condensed', 'Barlow', system-ui, sans-serif;
+
+  --shadow-card: 0 1px 0 0 rgb(255 255 255 / 0.03) inset, 0 8px 24px -12px rgb(0 0 0 / 0.6);
 }
 
 @layer base {
   body {
     @apply bg-background text-foreground font-sans antialiased;
   }
+  h1,
+  h2,
+  h3 {
+    @apply font-display tracking-wide;
+  }
   :focus-visible {
     @apply outline-2 outline-offset-2 outline-primary;
+  }
+  ::selection {
+    @apply bg-primary text-primary-foreground;
+  }
+}
+
+@layer utilities {
+  /* soft yellow glow behind the main content, kept subtle so text contrast is unaffected */
+  .bg-glow {
+    background-image: radial-gradient(60rem 24rem at 80% -8rem, rgb(250 204 21 / 0.08), transparent 70%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }

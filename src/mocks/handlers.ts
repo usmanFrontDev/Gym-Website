@@ -1,5 +1,5 @@
 import { http, HttpResponse } from 'msw'
-import { adminProfile, memberRows, plans } from './fixtures'
+import { activityRows, adminProfile, discountMembers, gymSettings, memberAttendance, memberRows, plans } from './fixtures'
 
 const base = 'http://localhost:54321'
 
@@ -24,4 +24,35 @@ export const handlers = [
       rows,
     })
   }),
+  http.post(`${base}/rest/v1/rpc/list_activity`, async ({ request }) => {
+    const body = (await request.json()) as { p_kind?: string | null; p_search?: string | null }
+    const search = (body.p_search ?? '').toLowerCase()
+    const matching = activityRows.filter((r) => (r.name ?? '').toLowerCase().includes(search))
+    const rows = matching.filter((r) => !body.p_kind || r.kind === body.p_kind)
+    const count = (kind: string) => matching.filter((r) => r.kind === kind).length
+    return HttpResponse.json({
+      rows, total: rows.length,
+      counts: { all: matching.length, onboarded: count('ONBOARDED'), granted: count('GRANTED'), denied: count('DENIED') },
+    })
+  }),
+  http.post(`${base}/rest/v1/rpc/bridge_overview`, () =>
+    HttpResponse.json({ online: false, server_time: '2026-04-10T10:00:00Z', last_seen_at: '2026-04-10T09:00:00Z', device_users: 42, device_records: 900 }),
+  ),
+  http.post(`${base}/rest/v1/rpc/member_attendance`, () => HttpResponse.json(memberAttendance)),
+  http.post(`${base}/rest/v1/rpc/attendance_overview`, () =>
+    HttpResponse.json({
+      total: 1,
+      rows: [{ id: 'member-1', full_name: 'Ali Raza', fingerprint_id: '12', registration_date: '2026-02-17', status: 'ACTIVE', days_attended: 3, last_visit: '2026-03-03T05:00:00Z' }],
+    }),
+  ),
+  http.get(`${base}/rest/v1/gym_settings`, () => HttpResponse.json(gymSettings)),
+  http.get(`${base}/rest/v1/members`, ({ request }) => {
+    const only = new URL(request.url).searchParams.get('monthly_discount')
+    const rows = only ? discountMembers.filter((m) => m.monthly_discount > 0) : discountMembers
+    return HttpResponse.json(rows, { headers: { 'content-range': `0-${rows.length - 1}/${rows.length}` } })
+  }),
+  http.post(`${base}/rest/v1/rpc/create_plan`, () => HttpResponse.json('QUARTERLY')),
+  http.post(`${base}/rest/v1/rpc/update_plan`, () => new HttpResponse(null, { status: 204 })),
+  http.post(`${base}/rest/v1/rpc/set_member_discount`, () => new HttpResponse(null, { status: 204 })),
+  http.post(`${base}/rest/v1/rpc/update_my_profile`, () => new HttpResponse(null, { status: 204 })),
 ]

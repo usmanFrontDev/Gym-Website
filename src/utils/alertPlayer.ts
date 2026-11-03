@@ -14,24 +14,31 @@ export function enableAlertSound(): boolean {
   }
 }
 
-function tone(frequency: number, durationSec: number, type: OscillatorType) {
+function tone(frequency: number, durationSec: number, type: OscillatorType, volume: number) {
   if (!context) return
   const osc = context.createOscillator()
   const gain = context.createGain()
   osc.type = type
   osc.frequency.value = frequency
-  gain.gain.value = 0.2
+  gain.gain.value = volume * 0.35
   osc.connect(gain).connect(context.destination)
   osc.start()
   osc.stop(context.currentTime + durationSec)
 }
 
-export function playAlert(status: MemberStatusValue) {
+export interface AlertOptions {
+  /** Speak the message after the buzzer. */
+  speech?: boolean
+  /** 0.1 to 1 */
+  volume?: number
+}
+
+export function playAlert(status: MemberStatusValue, { speech = true, volume = 0.6 }: AlertOptions = {}) {
   if (!context) return
   const { sound, message } = alertForStatus(status)
-  if (sound === 'beep') return tone(880, 0.15, 'sine')
-  tone(180, 1.2, 'sawtooth')
-  if (message && 'speechSynthesis' in window) {
+  if (sound === 'beep') return tone(880, 0.15, 'sine', volume)
+  tone(180, 1.2, 'sawtooth', volume)
+  if (speech && message && 'speechSynthesis' in window) {
     window.setTimeout(() => window.speechSynthesis.speak(new SpeechSynthesisUtterance(message)), 1000)
   }
 }

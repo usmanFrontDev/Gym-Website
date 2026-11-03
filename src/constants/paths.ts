@@ -3,6 +3,7 @@ export enum Path {
   Login = '/login',
   Forbidden = '/forbidden',
   Profile = '/profile',
+  Settings = '/settings',
 
   AdminDashboard = '/admin',
   AdminMembers = '/admin/members',
@@ -12,12 +13,17 @@ export enum Path {
   AdminManagerDetail = '/admin/managers/:managerId',
   AdminTrainers = '/admin/trainers',
   AdminExpenses = '/admin/expenses',
+  AdminPlans = '/admin/plans',
+  AdminAttendance = '/admin/attendance',
+  AdminAttendanceDetail = '/admin/attendance/:memberId',
 
   ManagerDashboard = '/manager',
   ManagerStats = '/manager/stats',
   ManagerMembers = '/manager/members',
   ManagerMemberNew = '/manager/members/new',
   ManagerMemberDetail = '/manager/members/:memberId',
+  ManagerAttendance = '/manager/attendance',
+  ManagerAttendanceDetail = '/manager/attendance/:memberId',
 
   TrainerDashboard = '/trainer',
   TrainerMembers = '/trainer/members',

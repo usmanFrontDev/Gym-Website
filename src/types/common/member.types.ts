@@ -47,6 +47,7 @@ export interface Plan {
   price: number
   months: number | null
   is_trainer_plan: boolean
+  active: boolean
 }
 
 export interface Membership {
@@ -73,6 +74,8 @@ export interface MemberRecord {
   blocked: boolean
   registered_by: string
   registration_date: string
+  /** Fixed PKR taken off every month of a non-lifetime plan. Set by the owner only. */
+  monthly_discount: number
 }
 
 export interface MemberDetail {
@@ -107,11 +110,3 @@ export interface AssignmentRecord {
   trainer: { full_name: string } | null
 }
 
-export interface ActivityRow {
-  id: string
-  fingerprint_id: string
-  punched_at: string
-  status: MemberStatusValue
-  member: { full_name: string } | null
-  profile: { full_name: string } | null
-}

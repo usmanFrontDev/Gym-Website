@@ -22,6 +22,7 @@ export interface RegisterMemberInput {
   amount: number
   admission_fee: number
   discount: number
+  monthly_discount: number
   start_date: string
   trainer_id: string
   commission: number
@@ -122,6 +123,7 @@ export const memberService = {
         p_start_date: orNull(input.start_date),
         p_trainer_id: orNull(input.trainer_id),
         p_commission: input.trainer_id ? input.commission : null,
+        p_monthly_discount: input.monthly_discount,
       }),
     ) as string
   },

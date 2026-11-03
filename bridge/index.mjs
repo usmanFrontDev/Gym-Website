@@ -5,6 +5,8 @@
 //    caught up from the full log.
 //  - Enrollment: runs fingerprint scans the app queues in device_enrollments, picks the device user ID
 //    and reports the result back on the same row.
+//  - Heartbeat: every few seconds the bridge writes bridge_status (counters, last scan, last error) so the
+//    dashboard can show whether the reception laptop and the scanner are alive.
 import { readFileSync, writeFileSync } from 'node:fs'
 import { createClient } from '@supabase/supabase-js'
 import ZKLibTCP from 'node-zklib/zklibtcp.js'
@@ -22,6 +24,8 @@ if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY || !ZK_IP) {
 const POLL_MS = 3000
 const ENROLL_TIMEOUT_MS = 90_000
 const REQUEST_TTL_MS = 120_000
+const HEARTBEAT_MS = 10_000
+const BRIDGE_VERSION = '1.1.0'
 const STATE_FILE = new URL('./.bridge-state.json', import.meta.url)
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, { auth: { persistSession: false } })
@@ -30,6 +34,32 @@ const log = (msg) => process.stdout.write(`${new Date().toLocaleTimeString()} ${
 const ok = (reply) => reply?.length >= 2 && reply.readUInt16LE(0) === COMMANDS.CMD_ACK_OK
 
 class EnrollError extends Error {}
+
+// ---------- heartbeat ----------
+
+/** What the dashboard shows; the heartbeat timer writes it, the rest of the bridge only updates it. */
+const status = {
+  device_ip: ZK_IP,
+  bridge_version: BRIDGE_VERSION,
+  started_at: new Date().toISOString(),
+}
+
+function noteError(message) {
+  status.last_error = message
+  status.last_error_at = new Date().toISOString()
+}
+
+async function reportStatus() {
+  const { error } = await supabase
+    .from('bridge_status')
+    .upsert({ id: 1, ...status, last_seen_at: new Date().toISOString() })
+  if (error) log(`heartbeat failed: ${error.message}`)
+}
+
+async function refreshUserCount() {
+  const { data } = await device.getUsers()
+  status.device_users = data.length
+}
 
 let device = null
 
@@ -83,6 +113,8 @@ async function sendPunch(userId, punchedAt) {
   })
   if (error) throw new Error(`log_punch failed: ${error.message}`)
   if (syncedRecords !== null) saveSyncedCount(syncedRecords + 1)
+  status.last_punch_at = punchedAt.toISOString()
+  status.last_punch_fingerprint_id = String(userId)
   log(`punch: device user ${userId}`)
 }
 
@@ -93,7 +125,10 @@ function onDeviceData(data) {
   if (data.length <= 16 || data.readUInt16LE(8) !== COMMANDS.CMD_REG_EVENT || data.readUInt16LE(12) !== COMMANDS.EF_ATTLOG) return
   device.socket.write(createTCPHeader(COMMANDS.CMD_ACK_OK, device.sessionId, 65534, ''))
   const { userId, attTime } = decodeRecordRealTimeLog52(data)
-  punchChain = punchChain.then(() => sendPunch(userId, attTime)).catch((e) => log(e.message))
+  punchChain = punchChain.then(() => sendPunch(userId, attTime)).catch((e) => {
+    noteError(e.message)
+    log(e.message)
+  })
 }
 
 /** Set when the device has more records than were sent; a full read only runs if the gap survives one poll. */
@@ -101,7 +136,10 @@ let gapSeen = false
 
 async function syncPunches() {
   await punchChain
-  const { records } = await deviceSizes()
+  const { fingers, records } = await deviceSizes()
+  status.device_fingerprints = fingers
+  status.device_records = records
+  status.last_sync_at = new Date().toISOString()
   // First run, or the device log was cleared: start counting from now.
   if (syncedRecords === null || records < syncedRecords) {
     gapSeen = false
@@ -209,6 +247,9 @@ async function runEnrollment(id) {
     }
     await device.executeCmd(COMMANDS.CMD_STARTVERIFY, '').catch(() => {})
     await setEnrollment(id, { status: 'SUCCESS', fingerprint_id: fingerprintId })
+    status.last_enrollment_at = new Date().toISOString()
+    status.last_enrollment_status = 'SUCCESS'
+    await refreshUserCount().catch(() => {})
     log(`enroll: success, device user ${fingerprintId}`)
   } catch (error) {
     await device.executeCmd(COMMANDS.CMD_CANCELCAPTURE, '').catch(() => {})
@@ -219,16 +260,22 @@ async function runEnrollment(id) {
       throw error
     }
     if (error.message) await setEnrollment(id, { status: 'FAILED', error: error.message })
+    status.last_enrollment_at = new Date().toISOString()
+    status.last_enrollment_status = error.message ? 'FAILED' : 'CANCELLED'
     log(`enroll: ${error.message ?? 'cancelled'}`)
   }
 }
 
 // ---------- main loop: reconnect forever, the laptop stays on all day ----------
 
+setInterval(() => void reportStatus(), HEARTBEAT_MS)
+await reportStatus()
+
 for (;;) {
   try {
     device = await connectDevice()
     await armRealtime()
+    await refreshUserCount()
     log('Bridge connected, waiting for punches and scan requests')
     for (;;) {
       const request = await claimEnrollment().catch((e) => log(`enroll queue error: ${e.message}`))
@@ -240,7 +287,9 @@ for (;;) {
       await sleep(POLL_MS)
     }
   } catch (error) {
-    process.stderr.write(`Bridge error: ${error instanceof Error ? error.message : error}. Retrying in 10s\n`)
+    const message = error instanceof Error ? error.message : String(error)
+    noteError(message)
+    process.stderr.write(`Bridge error: ${message}. Retrying in 10s\n`)
     await device?.disconnect().catch(() => {})
     device = null
     await sleep(10000)

@@ -41,6 +41,8 @@ export const registerMemberSchema = memberBase
   .extend(paymentBase.shape)
   .extend({
     admission_fee: moneyField,
+    /** Owner only; the database rejects it from anyone else. */
+    monthly_discount: moneyField.optional(),
     trainer_id: z.string(),
     commission: moneyField.optional(),
   })

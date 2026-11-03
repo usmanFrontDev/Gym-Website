@@ -79,6 +79,7 @@ export function MemberDetailView({ memberId, canChangeTrainer }: MemberDetailVie
                 ['Registered by', detail.registeredByName],
                 ['Trainer', detail.trainerName],
                 ['Plan', plan?.name],
+                ['Monthly discount', detail.member.monthly_discount > 0 ? `${formatPkr(detail.member.monthly_discount)} off every month` : 'None'],
                 ['Next payment due', isLifetime ? 'Never' : formatDate(membership?.due_date)],
                 ['Credit', membership ? formatPkr(membership.credit) : null],
               ].map(([label, value]) => (
@@ -151,7 +152,8 @@ export function MemberDetailView({ memberId, canChangeTrainer }: MemberDetailVie
               </section>
             </div>
 
-            <PaymentDialog open={payOpen} onClose={() => setPayOpen(false)} memberId={memberId} membership={membership} canChangePlan={planFinished} />
+            <PaymentDialog open={payOpen} onClose={() => setPayOpen(false)} memberId={memberId} membership={membership} canChangePlan={planFinished}
+          monthlyDiscount={detail.member.monthly_discount} />
             <VoidPaymentDialog paymentId={voidId} onClose={() => setVoidId(null)} />
             <ChangeTrainerDialog open={trainerOpen} memberId={memberId} onClose={() => setTrainerOpen(false)} />
             <ConfirmDialog

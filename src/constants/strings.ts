@@ -41,6 +41,9 @@ export const strings = {
     managers: 'Managers',
     trainers: 'Trainers',
     expenses: 'Expenses',
+    attendance: 'Attendance',
+    plans: 'Plans',
+    settings: 'Settings',
     stats: 'My stats',
     myMembers: 'My members',
     performance: 'Performance',
@@ -94,4 +97,123 @@ export const enrollStrings = {
 
 export const expenseLabels = {
   RENT: 'Rent', ELECTRICITY: 'Electricity', SALARIES: 'Salaries', EQUIPMENT: 'Equipment', MAINTENANCE: 'Maintenance', OTHER: 'Other',
+} as const
+
+export const activityStrings = {
+  title: 'Recent activity',
+  subtitle: 'Every decision the scanner makes, live, newest first.',
+  searchLabel: 'Search by name or fingerprint ID',
+  filters: { all: 'All', ONBOARDED: 'Onboarded', GRANTED: 'Access granted', DENIED: 'Access denied' },
+  kinds: { ONBOARDED: 'Onboarded', GRANTED: 'Granted', DENIED: 'Denied' },
+  columns: { time: 'Time', name: 'Member', fingerprint: 'Fingerprint ID', decision: 'Decision', detail: 'Reason' },
+  details: {
+    ACTIVE: 'Membership active',
+    STAFF: 'Staff member',
+    EXPIRED: 'Fees not paid',
+    FROZEN: 'Membership frozen',
+    BLOCKED: 'Member blocked',
+    UNKNOWN: 'Fingerprint not registered',
+    ONBOARDED: 'New member registered',
+  },
+  latest: 'Latest scan',
+  waiting: 'Standing by for scans',
+  soundOn: 'Sound on',
+  soundOff: 'Enable sound',
+} as const
+
+export const bridgeStrings = {
+  title: 'Scanner bridge',
+  online: 'Online',
+  offline: 'Offline',
+  offlineHint: 'The reception laptop has not reported recently. Check the bridge is running and the scanner is on the network.',
+  neverSeen: 'The bridge has never connected.',
+  rows: {
+    lastSeen: 'Last heartbeat',
+    lastPunch: 'Last scan',
+    lastSync: 'Last sync',
+    device: 'Device address',
+    users: 'Users on device',
+    fingerprints: 'Fingerprints stored',
+    records: 'Records on device',
+    enrollment: 'Last enrollment',
+    uptime: 'Running since',
+    version: 'Bridge version',
+    error: 'Last error',
+  },
+  never: 'Never',
+  none: 'None',
+} as const
+
+export const attendanceStrings = {
+  title: 'Attendance',
+  subtitle: 'Pick a member to see which days they came, month by month.',
+  searchLabel: 'Search by name or fingerprint ID',
+  columns: { name: 'Member', fingerprint: 'Fingerprint ID', joined: 'Joined', status: 'Status', days: 'Days attended', lastVisit: 'Last visit' },
+  detailSubtitle: 'Joining month to the current month. A day counts when the member had at least one granted scan.',
+  back: 'All members',
+  totalDays: 'Total days attended',
+  monthsActive: 'Months since joining',
+  busiest: 'Busiest month',
+  lastVisit: 'Last visit',
+  noVisits: 'No visits yet',
+  monthDays: (attended: number, countable: number) => `${attended} of ${countable} days`,
+  weekdays: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+  legend: { attended: 'Came', missed: 'Did not come', outside: 'Before joining or in the future' },
+  multiScanHint: '×2 means two scans that day. A day counts once however many times the member scanned.',
+  firstLast: (first: string, last: string, punches: number) =>
+    `${punches} scan${punches === 1 ? '' : 's'} · ${first === last ? first : `${first} to ${last}`}`,
+} as const
+
+export const planStrings = {
+  title: 'Plans',
+  subtitle: 'Add packages, change prices and give members a monthly discount.',
+  add: 'Add plan',
+  columns: { name: 'Plan', code: 'Code', price: 'Price', duration: 'Duration', type: 'Type', status: 'Status', actions: 'Actions' },
+  duration: (months: number | null) => (months === null ? 'Lifetime' : months === 1 ? '1 month' : `${months} months`),
+  types: { gym: 'Gym', trainer: 'Trainer package' },
+  active: 'Active',
+  off: 'Off',
+  edit: 'Edit',
+  priceNote: 'A new price only applies to future payments. Existing members keep what they already paid.',
+  lifetimeHint: 'Leave months empty for a lifetime plan. It is paid once and never expires.',
+  trainerHint: 'Trainer packages need a trainer and a commission when a member is registered.',
+  discounts: {
+    title: 'Member discounts',
+    subtitle: 'A fixed amount taken off every month of a member\'s plan. Lifetime plans are never discounted.',
+    search: 'Search members by name, phone or fingerprint ID',
+    onlyDiscounted: 'Only members with a discount',
+    columns: { member: 'Member', phone: 'Phone', discount: 'Monthly discount', actions: 'Actions' },
+    none: 'None',
+    set: 'Set discount',
+    off: (amount: string) => `${amount} off every month`,
+  },
+} as const
+
+export const settingsStrings = {
+  title: 'Settings',
+  subtitle: 'Your account, security and alert preferences.',
+  account: { title: 'Account', subtitle: 'Your contact details. Your email and role are managed by the owner.', email: 'Email', role: 'Role', save: 'Save changes' },
+  security: {
+    title: 'Security',
+    subtitle: 'Change your password or sign out every other device.',
+    save: 'Change password',
+    otherDevices: 'Sign out other devices',
+    otherDevicesTitle: 'Sign out other devices',
+    otherDevicesMessage: 'Every other browser or laptop signed in to your account will be signed out. This one stays signed in.',
+  },
+  alerts: {
+    title: 'Alerts on this device',
+    subtitle: 'These are saved on this browser only. Set them on the reception laptop.',
+    sound: 'Play a sound for every scan',
+    speech: 'Speak the message after the buzzer',
+    volume: 'Volume',
+    test: 'Test alert',
+    unlockHint: 'Your browser needs one click on this page before it allows sound.',
+  },
+  gym: {
+    title: 'Gym',
+    subtitle: 'Shown across the app. Only the owner can change these.',
+    save: 'Save gym settings',
+    admissionHint: 'The admission fee that new registrations start with. It can still be changed per member.',
+  },
 } as const
