@@ -1,7 +1,9 @@
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { MemberDetailView } from '@/components/common/MemberDetailView'
+import { Path } from '@/constants/paths'
 
 export default function MemberDetailPage() {
   const { memberId = '' } = useParams()
-  return <MemberDetailView memberId={memberId} canChangeTrainer />
+  const navigate = useNavigate()
+  return <MemberDetailView memberId={memberId} canChangeTrainer canDelete onDeleted={() => navigate(Path.AdminMembers)} />
 }

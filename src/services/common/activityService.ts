@@ -33,33 +33,9 @@ export const activityService = {
     }
   },
 
+  /** One punch with the scanned member's name and limited details (the RPC decides what the caller may see). */
   async byId(id: string): Promise<ActivityRow | null> {
-    const rows = unwrap(
-      await supabase
-        .from(Table.AttendanceLogs)
-        .select('id, fingerprint_id, punched_at, status, member_id, member:members(full_name), profile:profiles(full_name)')
-        .eq('id', id)
-        .limit(1),
-    ) as unknown as {
-      id: string
-      fingerprint_id: string
-      punched_at: string
-      status: ActivityRow['status']
-      member_id: string | null
-      member: { full_name: string } | null
-      profile: { full_name: string } | null
-    }[]
-    const row = rows[0]
-    if (!row) return null
-    return {
-      id: row.id,
-      at: row.punched_at,
-      fingerprint_id: row.fingerprint_id,
-      status: row.status,
-      kind: row.status === 'ACTIVE' || row.status === 'STAFF' ? 'GRANTED' : 'DENIED',
-      name: row.member?.full_name ?? row.profile?.full_name ?? null,
-      member_id: row.member_id,
-    }
+    return unwrap(await supabase.rpc(Rpc.PunchDetails, { p_log_id: id })) as ActivityRow | null
   },
 
   /** Realtime: fires with the new row's id for every punch. Returns an unsubscribe function. */

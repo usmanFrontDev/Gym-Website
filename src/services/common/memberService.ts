@@ -152,6 +152,10 @@ export const memberService = {
     unwrap(await supabase.rpc(Rpc.ResumeMember, { p_member_id: memberId }))
   },
 
+  async remove(memberId: string): Promise<void> {
+    unwrap(await supabase.rpc(Rpc.DeleteMember, { p_member_id: memberId }))
+  },
+
   async assignTrainer(memberId: string, trainerId: string | null, commission: number): Promise<void> {
     unwrap(await supabase.rpc(Rpc.AssignTrainer, { p_member_id: memberId, p_trainer_id: trainerId, p_commission: commission }))
   },

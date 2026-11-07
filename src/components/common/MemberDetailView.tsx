@@ -4,7 +4,7 @@ import { QueryState } from '@/components/common/QueryState'
 import { PageContainer } from '@/components/ui/PageContainer'
 import { strings } from '@/constants/strings'
 import {
-  useFreezeMember, useMember, useMemberAssignments, useMemberFreezes, useMemberPayments, usePlans, useResumeMember,
+  useDeleteMember, useFreezeMember, useMember, useMemberAssignments, useMemberFreezes, useMemberPayments, usePlans, useResumeMember,
 } from '@/hooks/common/useMembers'
 import { formatDate, formatPkr, todayKarachi } from '@/utils/format'
 import { Button } from './Button'
@@ -17,9 +17,11 @@ import { VoidPaymentDialog } from './VoidPaymentDialog'
 interface MemberDetailViewProps {
   memberId: string
   canChangeTrainer: boolean
+  canDelete?: boolean
+  onDeleted?: () => void
 }
 
-export function MemberDetailView({ memberId, canChangeTrainer }: MemberDetailViewProps) {
+export function MemberDetailView({ memberId, canChangeTrainer, canDelete = false, onDeleted }: MemberDetailViewProps) {
   const member = useMember(memberId)
   const payments = useMemberPayments(memberId)
   const freezes = useMemberFreezes(memberId)
@@ -27,7 +29,9 @@ export function MemberDetailView({ memberId, canChangeTrainer }: MemberDetailVie
   const plans = usePlans()
   const freeze = useFreezeMember()
   const resume = useResumeMember()
+  const deleteMember = useDeleteMember()
 
+  const [confirmDelete, setConfirmDelete] = useState(false)
   const [payOpen, setPayOpen] = useState(false)
   const [voidId, setVoidId] = useState<string | null>(null)
   const [confirmFreeze, setConfirmFreeze] = useState(false)
@@ -36,6 +40,14 @@ export function MemberDetailView({ memberId, canChangeTrainer }: MemberDetailVie
   const handleFreezeClick = () => setConfirmFreeze(true)
   const handleConfirmFreeze = () => freeze.mutate(memberId, { onSuccess: () => setConfirmFreeze(false) })
   const handleResume = () => resume.mutate(memberId)
+  const handleDeleteClick = () => setConfirmDelete(true)
+  const handleConfirmDelete = () =>
+    deleteMember.mutate(memberId, {
+      onSuccess: () => {
+        setConfirmDelete(false)
+        onDeleted?.()
+      },
+    })
 
   const detail = member.data
   const membership = detail?.membership ?? null
@@ -63,6 +75,9 @@ export function MemberDetailView({ memberId, canChangeTrainer }: MemberDetailVie
               )}
               {canChangeTrainer && (
                 <Button variant="secondary" onClick={() => setTrainerOpen(true)}>Change trainer</Button>
+              )}
+              {canDelete && (
+                <Button variant="danger" onClick={handleDeleteClick}>Delete member</Button>
               )}
             </div>
 
@@ -163,6 +178,14 @@ export function MemberDetailView({ memberId, canChangeTrainer }: MemberDetailVie
               loading={freeze.isPending}
               onCancel={() => setConfirmFreeze(false)}
               onConfirm={handleConfirmFreeze}
+            />
+            <ConfirmDialog
+              open={confirmDelete}
+              title="Delete member"
+              message="This member will be removed from all lists and their fingerprint freed. Payment history is kept."
+              loading={deleteMember.isPending}
+              onCancel={() => setConfirmDelete(false)}
+              onConfirm={handleConfirmDelete}
             />
           </div>
         )}

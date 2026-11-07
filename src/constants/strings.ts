@@ -46,6 +46,7 @@ export const strings = {
     settings: 'Settings',
     stats: 'My stats',
     myMembers: 'My members',
+    directory: 'Find member',
     performance: 'Performance',
     profile: 'Profile',
   },
@@ -83,6 +84,14 @@ export const memberStrings = {
   register: 'Register member',
 } as const
 
+export const directoryStrings = {
+  title: 'Find member',
+  subtitle: 'Look up any member of the gym. Only basic details are shown here.',
+  searchLabel: 'Search by member or father name',
+  collect: { action: 'Collect fees', title: 'Collect fees', description: (name: string) => `Record the fee received from ${name}.`, amount: 'Amount received (PKR)', received: 'Received', success: 'Fee recorded' },
+  columns: { name: 'Name', father: 'Father name', registered: 'Registered', lastPayment: 'Last payment', actions: 'Action' },
+} as const
+
 export const enrollStrings = {
   scan: 'Scan fingerprint',
   rescan: 'Scan again',
@@ -116,6 +125,7 @@ export const activityStrings = {
     ONBOARDED: 'New member registered',
   },
   latest: 'Latest scan',
+  scanDetails: { father: 'Father name', registered: 'Registered', lastPayment: 'Last payment' },
   waiting: 'Standing by for scans',
   soundOn: 'Sound on',
   soundOff: 'Enable sound',

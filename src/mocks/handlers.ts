@@ -1,7 +1,10 @@
 import { http, HttpResponse } from 'msw'
-import { activityRows, adminProfile, discountMembers, gymSettings, memberAttendance, memberRows, plans } from './fixtures'
+import { activityRows, adminProfile, directoryRows, discountMembers, gymSettings, memberAttendance, memberRows, plans } from './fixtures'
 
 const base = 'http://localhost:54321'
+
+/** Fees recorded through the mocked collect_fee RPC, so tests can assert the request. */
+export const collectedFees: { p_member_id: string; p_amount: number }[] = []
 
 /** Supabase REST/RPC/auth handlers shared by tests and the optional dev mock mode. */
 export const handlers = [
@@ -34,6 +37,16 @@ export const handlers = [
       rows, total: rows.length,
       counts: { all: matching.length, onboarded: count('ONBOARDED'), granted: count('GRANTED'), denied: count('DENIED') },
     })
+  }),
+  http.post(`${base}/rest/v1/rpc/gym_directory`, async ({ request }) => {
+    const body = (await request.json()) as { p_search?: string | null }
+    const search = (body.p_search ?? '').toLowerCase()
+    const rows = directoryRows.filter((r) => r.full_name.toLowerCase().includes(search))
+    return HttpResponse.json({ rows, total: rows.length })
+  }),
+  http.post(`${base}/rest/v1/rpc/collect_fee`, async ({ request }) => {
+    collectedFees.push((await request.json()) as { p_member_id: string; p_amount: number })
+    return HttpResponse.json('payment-1')
   }),
   http.post(`${base}/rest/v1/rpc/bridge_overview`, () =>
     HttpResponse.json({ online: false, server_time: '2026-04-10T10:00:00Z', last_seen_at: '2026-04-10T09:00:00Z', device_users: 42, device_records: 900 }),

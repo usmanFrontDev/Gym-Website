@@ -1,8 +1,8 @@
 import { FingerprintPattern, ShieldAlert, ShieldCheck } from 'lucide-react'
-import { activityStrings } from '@/constants/strings'
+import { activityStrings, strings } from '@/constants/strings'
 import type { ActivityRow } from '@/types/common/activity.types'
 import { alertForStatus } from '@/utils/alerts'
-import { formatDateTime } from '@/utils/format'
+import { formatDate, formatDateTime } from '@/utils/format'
 
 interface ScanCardProps {
   scan: ActivityRow | null
@@ -38,6 +38,16 @@ export function ScanCard({ scan }: ScanCardProps) {
         {scan.name ?? 'Unknown fingerprint'}
       </p>
       <p className="mt-1 text-lg font-semibold">{message}</p>
+      {scan.registration_date && (
+        <dl className="mt-3 grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 text-sm">
+          <dt className="text-muted">{activityStrings.scanDetails.father}</dt>
+          <dd className="font-semibold text-foreground">{scan.father_name ?? strings.common.none}</dd>
+          <dt className="text-muted">{activityStrings.scanDetails.registered}</dt>
+          <dd className="font-semibold text-foreground">{formatDate(scan.registration_date)}</dd>
+          <dt className="text-muted">{activityStrings.scanDetails.lastPayment}</dt>
+          <dd className="font-semibold text-foreground">{formatDate(scan.last_payment_date)}</dd>
+        </dl>
+      )}
       <p className="mt-3 text-sm text-muted">{formatDateTime(scan.at)}</p>
     </div>
   )

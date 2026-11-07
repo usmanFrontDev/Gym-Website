@@ -1,6 +1,7 @@
 import { Role } from '@/constants/roles'
 import type { ActivityRow } from '@/types/common/activity.types'
 import type { MemberAttendance } from '@/types/common/attendance.types'
+import type { DirectoryRow } from '@/types/common/directory.types'
 import type { MemberRow, Plan } from '@/types/common/member.types'
 import type { Profile } from '@/types/common/user.types'
 
@@ -38,6 +39,11 @@ export const activityRows: ActivityRow[] = [
   { id: 'a1', at: '2026-04-10T09:00:00Z', fingerprint_id: '12', status: 'ACTIVE', kind: 'GRANTED', name: 'Ali Raza', member_id: 'member-1' },
   { id: 'a2', at: '2026-04-10T08:00:00Z', fingerprint_id: '13', status: 'EXPIRED', kind: 'DENIED', name: 'Sara Khan', member_id: 'member-2' },
   { id: 'm3', at: '2026-04-09T08:00:00Z', fingerprint_id: '14', status: 'ONBOARDED', kind: 'ONBOARDED', name: 'Newcomer Noor', member_id: 'member-3' },
+]
+
+export const directoryRows: DirectoryRow[] = [
+  { id: 'member-1', full_name: 'Ali Raza', father_name: 'Raza', registration_date: '2025-06-02', last_payment_date: '2025-06-02' },
+  { id: 'member-9', full_name: 'Zain Malik', father_name: null, registration_date: '2025-08-15', last_payment_date: null },
 ]
 
 export const memberAttendance: MemberAttendance = {

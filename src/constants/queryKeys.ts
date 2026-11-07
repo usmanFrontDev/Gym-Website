@@ -23,4 +23,5 @@ export enum QueryKey {
   GymSettings = 'gym-settings',
   DiscountMembers = 'discount-members',
   AttendanceOverview = 'attendance-overview',
+  GymDirectory = 'gym-directory',
 }

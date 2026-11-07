@@ -59,3 +59,8 @@ export type RecordPaymentValues = z.infer<typeof recordPaymentSchema>
 
 export const voidPaymentSchema = z.object({ reason: requiredString('Reason') })
 export type VoidPaymentValues = z.infer<typeof voidPaymentSchema>
+
+export const collectFeeSchema = z.object({ amount: moneyField }).superRefine((value, ctx) => {
+  if (value.amount <= 0) ctx.addIssue({ code: 'custom', path: ['amount'], message: 'Enter the amount received' })
+})
+export type CollectFeeValues = z.infer<typeof collectFeeSchema>

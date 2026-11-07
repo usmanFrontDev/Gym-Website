@@ -12,6 +12,10 @@ export interface ActivityRow {
   kind: ActivityKind
   name: string | null
   member_id: string | null
+  /** Limited member details, present for scans of gym members the caller may identify. */
+  father_name?: string | null
+  registration_date?: string | null
+  last_payment_date?: string | null
 }
 
 export interface ActivityCounts {

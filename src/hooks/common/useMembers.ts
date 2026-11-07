@@ -103,6 +103,18 @@ export function useResumeMember() {
   })
 }
 
+export function useDeleteMember() {
+  const invalidate = useBillingInvalidation()
+  return useMutation({
+    mutationFn: memberService.remove,
+    onSuccess: () => {
+      toast.success('Member deleted')
+      invalidate()
+    },
+    onError: (e) => toast.error(e.message),
+  })
+}
+
 export function useAssignTrainer() {
   const invalidate = useBillingInvalidation()
   return useMutation({

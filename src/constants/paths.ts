@@ -20,6 +20,7 @@ export enum Path {
   ManagerDashboard = '/manager',
   ManagerStats = '/manager/stats',
   ManagerMembers = '/manager/members',
+  ManagerDirectory = '/manager/directory',
   ManagerMemberNew = '/manager/members/new',
   ManagerMemberDetail = '/manager/members/:memberId',
   ManagerAttendance = '/manager/attendance',

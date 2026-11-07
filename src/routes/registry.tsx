@@ -1,4 +1,4 @@
-import { Banknote, CalendarCheck, LayoutDashboard, ShieldCheck, Tags, TrendingUp, Settings, Users, Dumbbell, type LucideIcon } from 'lucide-react'
+import { Banknote, CalendarCheck, LayoutDashboard, Search, ShieldCheck, Tags, TrendingUp, Settings, Users, Dumbbell, type LucideIcon } from 'lucide-react'
 import { lazy, type ComponentType, type LazyExoticComponent } from 'react'
 import { Path } from '@/constants/paths'
 import { Role } from '@/constants/roles'
@@ -35,6 +35,7 @@ export const routeRegistry: RouteEntry[] = [
   { path: Path.ManagerDashboard, element: page(() => import('@/pages/manager/DashboardPage')), roles: MANAGER, nav: { label: strings.nav.dashboard, icon: LayoutDashboard } },
   { path: Path.ManagerStats, element: page(() => import('@/pages/manager/StatsPage')), roles: MANAGER, nav: { label: strings.nav.stats, icon: TrendingUp } },
   { path: Path.ManagerMembers, element: page(() => import('@/pages/manager/MembersPage')), roles: MANAGER, nav: { label: strings.nav.myMembers, icon: Users } },
+  { path: Path.ManagerDirectory, element: page(() => import('@/pages/manager/DirectoryPage')), roles: MANAGER, nav: { label: strings.nav.directory, icon: Search } },
   { path: Path.ManagerAttendance, element: page(() => import('@/pages/manager/AttendancePage')), roles: MANAGER, nav: { label: strings.nav.attendance, icon: CalendarCheck } },
   { path: Path.ManagerAttendanceDetail, element: page(() => import('@/pages/manager/AttendanceDetailPage')), roles: MANAGER },
   { path: Path.ManagerMemberNew, element: page(() => import('@/pages/manager/MemberNewPage')), roles: MANAGER },
