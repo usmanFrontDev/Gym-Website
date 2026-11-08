@@ -1,6 +1,6 @@
 /** Central place for user-facing text. */
 export const strings = {
-  appName: 'Iron Gym',
+  appName: 'Try Workout Gym',
   common: {
     cancel: 'Cancel',
     confirm: 'Confirm',

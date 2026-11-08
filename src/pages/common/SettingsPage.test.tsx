@@ -25,7 +25,7 @@ describe('SettingsPage', () => {
   it('shows the gym section to the owner only', async () => {
     const { unmount } = renderWithProviders(<SettingsPage />)
     expect(await screen.findByRole('heading', { name: 'Gym' })).toBeInTheDocument()
-    expect(await screen.findByLabelText('Gym name')).toHaveValue('Iron Gym')
+    expect(await screen.findByLabelText('Gym name')).toHaveValue('Try Workout Gym')
     unmount()
 
     useAuthStore.setState({ user: managerProfile, ready: true })

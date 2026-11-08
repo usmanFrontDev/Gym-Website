@@ -56,7 +56,7 @@ export const memberAttendance: MemberAttendance = {
   ],
 }
 
-export const gymSettings = { gym_name: 'Iron Gym', phone: '03001234567', address: 'Karachi', default_admission_fee: 1000 }
+export const gymSettings = { gym_name: 'Try Workout Gym', phone: '03001234567', address: 'Karachi', default_admission_fee: 1000 }
 
 export const discountMembers = [
   { id: 'member-1', full_name: 'Ali Raza', phone: '03001112222', fingerprint_id: '12', monthly_discount: 500 },

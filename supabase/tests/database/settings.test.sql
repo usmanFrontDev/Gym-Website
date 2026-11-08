@@ -23,7 +23,7 @@ select is((select role::text from public.profiles where id = '00000000-0000-0000
 select throws_ok($$ select public.update_my_profile('   ', null, null, null) $$, 'Name is required', 'a blank name is rejected');
 select is((select count(*)::int from public.gym_settings), 1, 'staff can read the gym settings');
 update public.gym_settings set gym_name = 'Hacked';
-select is((select gym_name from public.gym_settings), 'Iron Gym', 'a trainer cannot change the gym settings');
+select is((select gym_name from public.gym_settings), 'Try Workout Gym', 'a trainer cannot change the gym settings');
 
 -- Admin changes them
 select pg_temp.act_as('00000000-0000-0000-0000-0000000000a1');
