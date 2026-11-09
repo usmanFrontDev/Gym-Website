@@ -1,19 +1,25 @@
 import { useState } from 'react'
 import { Badge } from '@/components/common/Badge'
 import { Button } from '@/components/common/Button'
+import { ConfirmDialog } from '@/components/common/ConfirmDialog'
 import { QueryState } from '@/components/common/QueryState'
 import { planStrings } from '@/constants/strings'
 import { usePlans } from '@/hooks/common/useMembers'
+import { useDeletePlan } from '@/hooks/superAdmin/usePlansAdmin'
 import type { Plan } from '@/types/common/member.types'
 import { formatPkr } from '@/utils/format'
 import { PlanEditDialog } from './PlanEditDialog'
 
 export function PlansTable() {
   const plans = usePlans()
+  const remove = useDeletePlan()
   const [editing, setEditing] = useState<Plan | null>(null)
+  const [deleting, setDeleting] = useState<Plan | null>(null)
   const c = planStrings.columns
 
   const handleEditClick = (plan: Plan) => setEditing(plan)
+  const handleDeleteClick = (plan: Plan) => setDeleting(plan)
+  const handleConfirmDelete = () => deleting && remove.mutate(deleting.code, { onSuccess: () => setDeleting(null) })
 
   return (
     <div className="overflow-hidden rounded-card border border-border bg-surface shadow-card">
@@ -41,9 +47,12 @@ export function PlansTable() {
                   <td className="px-4 py-3.5">
                     <Badge tone={plan.active ? 'success' : 'neutral'}>{plan.active ? planStrings.active : planStrings.off}</Badge>
                   </td>
-                  <td className="px-4 py-3.5">
+                  <td className="flex gap-2 px-4 py-3.5">
                     <Button variant="secondary" size="sm" onClick={() => handleEditClick(plan)} aria-label={`${planStrings.edit} ${plan.name}`}>
                       {planStrings.edit}
+                    </Button>
+                    <Button variant="danger" size="sm" onClick={() => handleDeleteClick(plan)} aria-label={`${planStrings.delete} ${plan.name}`}>
+                      {planStrings.delete}
                     </Button>
                   </td>
                 </tr>
@@ -53,6 +62,14 @@ export function PlansTable() {
         </div>
       </QueryState>
       <PlanEditDialog plan={editing} onClose={() => setEditing(null)} />
+      <ConfirmDialog
+        open={deleting !== null}
+        title={planStrings.deleteTitle}
+        message={deleting ? planStrings.deleteMessage(deleting.name) : ''}
+        loading={remove.isPending}
+        onCancel={() => setDeleting(null)}
+        onConfirm={handleConfirmDelete}
+      />
     </div>
   )
 }

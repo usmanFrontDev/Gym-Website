@@ -53,6 +53,12 @@ export function RegisterMemberForm({ onRegistered }: RegisterMemberFormProps) {
     if (plan) setValue('amount', price)
   }, [plan, price, setValue])
 
+  // The default plan may have been deleted or turned off: move to the first plan that can be sold.
+  const firstActivePlan = plans.data?.find((p) => p.active)?.code
+  useEffect(() => {
+    if (firstActivePlan && !plans.data?.some((p) => p.active && p.code === planCode)) setValue('plan_code', firstActivePlan)
+  }, [plans.data, planCode, firstActivePlan, setValue])
+
   useEffect(() => {
     if (defaultAdmissionFee !== undefined) setValue('admission_fee', defaultAdmissionFee)
   }, [defaultAdmissionFee, setValue])

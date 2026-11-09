@@ -80,6 +80,7 @@ export const handlers = [
   }),
   http.post(`${base}/rest/v1/rpc/create_plan`, () => HttpResponse.json('QUARTERLY')),
   http.post(`${base}/rest/v1/rpc/update_plan`, () => new HttpResponse(null, { status: 204 })),
+  http.post(`${base}/rest/v1/rpc/delete_plan`, () => new HttpResponse(null, { status: 204 })),
   http.post(`${base}/rest/v1/rpc/set_member_discount`, () => new HttpResponse(null, { status: 204 })),
   http.post(`${base}/rest/v1/rpc/update_my_profile`, () => new HttpResponse(null, { status: 204 })),
 ]

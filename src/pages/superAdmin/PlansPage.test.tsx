@@ -69,4 +69,24 @@ describe('PlansPage', () => {
     await userEvent.click(within(dialog).getByRole('button', { name: 'Save discount' }))
     await waitFor(() => expect(body).toEqual({ p_member_id: 'member-2', p_amount: 500 }))
   })
+
+  it('deletes a plan only after it is confirmed', async () => {
+    let body: Record<string, unknown> | null = null
+    server.use(
+      http.post(`${base}/rest/v1/rpc/delete_plan`, async ({ request }) => {
+        body = (await request.json()) as Record<string, unknown>
+        return new HttpResponse(null, { status: 204 })
+      }),
+    )
+    renderWithProviders(<PlansPage />)
+    await userEvent.click(await screen.findByRole('button', { name: 'Delete Trainer 8000' }))
+    const dialog = await screen.findByRole('dialog', { name: /delete plan/i })
+    expect(body).toBeNull()
+    await userEvent.click(within(dialog).getByRole('button', { name: 'Cancel' }))
+    expect(body).toBeNull()
+
+    await userEvent.click(screen.getByRole('button', { name: 'Delete Trainer 8000' }))
+    await userEvent.click(within(await screen.findByRole('dialog', { name: /delete plan/i })).getByRole('button', { name: 'Confirm' }))
+    await waitFor(() => expect(body).toEqual({ p_code: 'TRAINER_8000' }))
+  })
 })

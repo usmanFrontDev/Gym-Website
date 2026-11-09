@@ -42,6 +42,18 @@ export function useUpdatePlan() {
   })
 }
 
+export function useDeletePlan() {
+  const invalidate = usePlanInvalidation()
+  return useMutation({
+    mutationFn: (code: string) => planService.remove(code),
+    onSuccess: () => {
+      invalidate()
+      toast.success('Plan deleted')
+    },
+    onError: (error) => toast.error(error.message),
+  })
+}
+
 export function useSetMemberDiscount() {
   const invalidate = usePlanInvalidation()
   return useMutation({

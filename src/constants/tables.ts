@@ -43,6 +43,7 @@ export enum Rpc {
   SetMemberDiscount = 'set_member_discount',
   CreatePlan = 'create_plan',
   UpdatePlan = 'update_plan',
+  DeletePlan = 'delete_plan',
   UpdateMyProfile = 'update_my_profile',
 }
 

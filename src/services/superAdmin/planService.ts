@@ -55,6 +55,10 @@ export const planService = {
     unwrap(await supabase.rpc(Rpc.UpdatePlan, { p_code: input.code, p_name: input.name, p_price: input.price, p_active: input.active }))
   },
 
+  async remove(code: string): Promise<void> {
+    unwrap(await supabase.rpc(Rpc.DeletePlan, { p_code: code }))
+  },
+
   async setMemberDiscount(memberId: string, amount: number): Promise<void> {
     unwrap(await supabase.rpc(Rpc.SetMemberDiscount, { p_member_id: memberId, p_amount: amount }))
   },
