@@ -15,7 +15,10 @@ const memberBase = z.object({
   fingerprint_id: z.string().trim().min(1, "Scan the member's fingerprint first"),
 })
 
+const paymentMethodField = z.enum(['CASH', 'ONLINE'])
+
 const paymentBase = z.object({
+  payment_method: paymentMethodField,
   plan_code: requiredString('Plan'),
   amount: moneyField,
   discount: moneyField,
@@ -60,7 +63,7 @@ export type RecordPaymentValues = z.infer<typeof recordPaymentSchema>
 export const voidPaymentSchema = z.object({ reason: requiredString('Reason') })
 export type VoidPaymentValues = z.infer<typeof voidPaymentSchema>
 
-export const collectFeeSchema = z.object({ amount: moneyField }).superRefine((value, ctx) => {
+export const collectFeeSchema = z.object({ amount: moneyField, payment_method: paymentMethodField }).superRefine((value, ctx) => {
   if (value.amount <= 0) ctx.addIssue({ code: 'custom', path: ['amount'], message: 'Enter the amount received' })
 })
 export type CollectFeeValues = z.infer<typeof collectFeeSchema>

@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { ConfirmDialog } from '@/components/common/ConfirmDialog'
 import { QueryState } from '@/components/common/QueryState'
 import { PageContainer } from '@/components/ui/PageContainer'
-import { strings } from '@/constants/strings'
+import { paymentMethodStrings, strings } from '@/constants/strings'
 import {
   useDeleteMember, useFreezeMember, useMember, useMemberAssignments, useMemberFreezes, useMemberPayments, usePlans, useResumeMember,
 } from '@/hooks/common/useMembers'
@@ -113,6 +113,7 @@ export function MemberDetailView({ memberId, canChangeTrainer, canDelete = false
                     <tr>
                       <th scope="col" className="px-4 py-2">Date</th>
                       <th scope="col" className="px-4 py-2">Amount</th>
+                      <th scope="col" className="px-4 py-2">{paymentMethodStrings.label}</th>
                       <th scope="col" className="px-4 py-2">Admission</th>
                       <th scope="col" className="px-4 py-2">Status</th>
                       <th scope="col" className="px-4 py-2">{strings.common.actions}</th>
@@ -123,6 +124,7 @@ export function MemberDetailView({ memberId, canChangeTrainer, canDelete = false
                       <tr key={p.id} className="border-t border-border">
                         <td className="px-4 py-2">{formatDate(p.paid_on)}</td>
                         <td className="px-4 py-2">{formatPkr(p.amount)}</td>
+                        <td className="px-4 py-2">{paymentMethodStrings.labels[p.payment_method] ?? strings.common.none}</td>
                         <td className="px-4 py-2">{formatPkr(p.admission_fee)}</td>
                         <td className="px-4 py-2">
                           {p.voided_at ? <Badge tone="danger">Void: {p.void_reason}</Badge> : <Badge tone="success">Paid</Badge>}

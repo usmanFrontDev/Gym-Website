@@ -2,7 +2,7 @@ import { Rpc, Table } from '@/constants/tables'
 import type { MemberStatusValue } from '@/components/common/StatusBadge'
 import type {
   AssignmentRecord, FreezeRecord, MemberDetail, MemberRecord, MembersFilters, MembersPageData,
-  Membership, PaymentRecord, Plan,
+  Membership, PaymentMethod, PaymentRecord, Plan,
 } from '@/types/common/member.types'
 import { PAGE_SIZE } from '@/components/common/Pagination'
 import { supabase, unwrap } from '../supabase-client'
@@ -23,6 +23,7 @@ export interface RegisterMemberInput {
   admission_fee: number
   discount: number
   monthly_discount: number
+  payment_method: PaymentMethod
   start_date: string
   trainer_id: string
   commission: number
@@ -34,6 +35,7 @@ export interface RecordPaymentInput {
   plan_code: string
   start_date: string
   discount: number
+  payment_method: PaymentMethod
 }
 
 export const memberService = {
@@ -124,6 +126,7 @@ export const memberService = {
         p_trainer_id: orNull(input.trainer_id),
         p_commission: input.trainer_id ? input.commission : null,
         p_monthly_discount: input.monthly_discount,
+        p_payment_method: input.payment_method,
       }),
     ) as string
   },
@@ -136,6 +139,7 @@ export const memberService = {
         p_plan_code: orNull(input.plan_code),
         p_start_date: orNull(input.start_date),
         p_discount: input.discount,
+        p_payment_method: input.payment_method,
       }),
     ) as string
   },

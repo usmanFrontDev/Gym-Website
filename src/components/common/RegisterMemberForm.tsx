@@ -9,6 +9,7 @@ import { FormPhoneInput } from '@/components/form/FormPhoneInput'
 import { FormSelect } from '@/components/form/FormSelect'
 import { FormTextarea } from '@/components/form/FormTextarea'
 import { Role } from '@/constants/roles'
+import { paymentMethodStrings } from '@/constants/strings'
 import { useRegisterMember, usePlans } from '@/hooks/common/useMembers'
 import { useGymSettings } from '@/hooks/common/useSettings'
 import { useTrainerOptions } from '@/hooks/common/useStaff'
@@ -35,7 +36,7 @@ export function RegisterMemberForm({ onRegistered }: RegisterMemberFormProps) {
     resolver: zodResolver(registerMemberSchema),
     defaultValues: {
       full_name: '', father_name: '', phone: '', emergency_contact: '', email: '', cnic: '', address: '', fingerprint_id: '',
-      plan_code: 'MONTHLY', amount: 2500, admission_fee: DEFAULT_ADMISSION_FEE, discount: 0, monthly_discount: 0, start_date: today,
+      plan_code: 'MONTHLY', amount: 2500, admission_fee: DEFAULT_ADMISSION_FEE, discount: 0, monthly_discount: 0, start_date: today, payment_method: 'CASH',
       trainer_id: '', commission: undefined,
     },
   })
@@ -86,6 +87,7 @@ export function RegisterMemberForm({ onRegistered }: RegisterMemberFormProps) {
           options={(plans.data ?? []).filter((p) => p.active).map((p) => ({ value: p.code, label: `${p.name} (${formatPkr(effectivePrice(p, monthlyDiscount || 0))})` }))}
         />
         <FormInput control={control} name="amount" label="Amount paid (PKR)" asNumber />
+        <FormSelect control={control} name="payment_method" label={paymentMethodStrings.label} options={[...paymentMethodStrings.options]} />
         <FormInput control={control} name="admission_fee" label="Admission fee (0 allowed)" asNumber />
         <FormInput control={control} name="discount" label="Admission discount" asNumber />
         {isOwner && <FormInput control={control} name="monthly_discount" label="Monthly discount (PKR off every month)" asNumber />}

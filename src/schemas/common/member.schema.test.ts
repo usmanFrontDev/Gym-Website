@@ -4,7 +4,7 @@ import { recordPaymentSchema, registerMemberSchema } from './member.schema'
 const valid = {
   full_name: 'Ali Raza', father_name: '', phone: '0301-5555555', emergency_contact: '', email: '', cnic: '', address: '',
   fingerprint_id: '501', plan_code: 'MONTHLY', amount: 2500, discount: 0, start_date: '2025-06-02', admission_fee: 1000,
-  trainer_id: '', commission: undefined,
+  trainer_id: '', commission: undefined, payment_method: 'CASH',
 }
 
 describe('registerMemberSchema', () => {
@@ -29,6 +29,11 @@ describe('registerMemberSchema', () => {
     expect(result.success).toBe(false)
     expect(result.error?.issues[0].path).toEqual(['fingerprint_id'])
   })
+  it('accepts cash or online but no other payment type', () => {
+    expect(registerMemberSchema.safeParse({ ...valid, payment_method: 'ONLINE' }).success).toBe(true)
+    expect(registerMemberSchema.safeParse({ ...valid, payment_method: 'CHEQUE' }).success).toBe(false)
+    expect(registerMemberSchema.safeParse({ ...valid, payment_method: undefined }).success).toBe(false)
+  })
   it('rejects a bad phone number', () => {
     expect(registerMemberSchema.safeParse({ ...valid, phone: 'abc' }).success).toBe(false)
   })
@@ -36,7 +41,7 @@ describe('registerMemberSchema', () => {
 
 describe('recordPaymentSchema', () => {
   it('needs a positive amount', () => {
-    expect(recordPaymentSchema.safeParse({ plan_code: 'MONTHLY', amount: 0, discount: 0, start_date: '' }).success).toBe(false)
-    expect(recordPaymentSchema.safeParse({ plan_code: 'MONTHLY', amount: 2500, discount: 0, start_date: '' }).success).toBe(true)
+    expect(recordPaymentSchema.safeParse({ plan_code: 'MONTHLY', amount: 0, discount: 0, start_date: '', payment_method: 'CASH' }).success).toBe(false)
+    expect(recordPaymentSchema.safeParse({ plan_code: 'MONTHLY', amount: 2500, discount: 0, start_date: '', payment_method: 'CASH' }).success).toBe(true)
   })
 })

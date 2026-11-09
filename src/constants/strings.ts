@@ -84,6 +84,16 @@ export const memberStrings = {
   register: 'Register member',
 } as const
 
+/** How a fee was received. Shown on every payment form and in payment history. */
+export const paymentMethodStrings = {
+  label: 'Payment type',
+  options: [
+    { value: 'CASH', label: 'Cash' },
+    { value: 'ONLINE', label: 'Online payment' },
+  ],
+  labels: { CASH: 'Cash', ONLINE: 'Online payment' },
+} as const
+
 export const directoryStrings = {
   title: 'Find member',
   subtitle: 'Look up any member of the gym. Only basic details are shown here.',

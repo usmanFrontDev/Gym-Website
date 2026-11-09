@@ -4,7 +4,7 @@ import { activityRows, adminProfile, directoryRows, discountMembers, gymSettings
 const base = 'http://localhost:54321'
 
 /** Fees recorded through the mocked collect_fee RPC, so tests can assert the request. */
-export const collectedFees: { p_member_id: string; p_amount: number }[] = []
+export const collectedFees: { p_member_id: string; p_amount: number; p_payment_method: string }[] = []
 
 /** Supabase REST/RPC/auth handlers shared by tests and the optional dev mock mode. */
 export const handlers = [
@@ -45,7 +45,7 @@ export const handlers = [
     return HttpResponse.json({ rows, total: rows.length })
   }),
   http.post(`${base}/rest/v1/rpc/collect_fee`, async ({ request }) => {
-    collectedFees.push((await request.json()) as { p_member_id: string; p_amount: number })
+    collectedFees.push((await request.json()) as { p_member_id: string; p_amount: number; p_payment_method: string })
     return HttpResponse.json('payment-1')
   }),
   http.post(`${base}/rest/v1/rpc/bridge_overview`, () =>

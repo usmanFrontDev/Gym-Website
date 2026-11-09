@@ -1,6 +1,7 @@
 import { PAGE_SIZE } from '@/components/common/Pagination'
 import { Rpc } from '@/constants/tables'
 import type { DirectoryPage } from '@/types/common/directory.types'
+import type { PaymentMethod } from '@/types/common/member.types'
 import { supabase, unwrap } from '../supabase-client'
 
 export const directoryService = {
@@ -12,7 +13,7 @@ export const directoryService = {
   },
 
   /** Records a fee on the member's current plan; the billing RPC moves the last payment date. */
-  async collectFee(memberId: string, amount: number): Promise<string> {
-    return unwrap(await supabase.rpc(Rpc.CollectFee, { p_member_id: memberId, p_amount: amount })) as string
+  async collectFee(memberId: string, amount: number, method: PaymentMethod): Promise<string> {
+    return unwrap(await supabase.rpc(Rpc.CollectFee, { p_member_id: memberId, p_amount: amount, p_payment_method: method })) as string
   },
 }

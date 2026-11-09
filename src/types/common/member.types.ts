@@ -86,9 +86,12 @@ export interface MemberDetail {
   trainerName: string | null
 }
 
+export type PaymentMethod = 'CASH' | 'ONLINE'
+
 export interface PaymentRecord {
   id: string
   amount: number
+  payment_method: PaymentMethod
   admission_fee: number
   discount: number
   paid_on: string

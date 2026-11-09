@@ -3,6 +3,7 @@ import toast from 'react-hot-toast'
 import { directoryStrings } from '@/constants/strings'
 import { QueryKey } from '@/constants/queryKeys'
 import { directoryService } from '@/services/common/directoryService'
+import type { PaymentMethod } from '@/types/common/member.types'
 
 export function useDirectory(search: string, page: number) {
   return useQuery({
@@ -15,7 +16,8 @@ export function useDirectory(search: string, page: number) {
 export function useCollectFee() {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: ({ memberId, amount }: { memberId: string; amount: number }) => directoryService.collectFee(memberId, amount),
+    mutationFn: ({ memberId, amount, method }: { memberId: string; amount: number; method: PaymentMethod }) =>
+      directoryService.collectFee(memberId, amount, method),
     onSuccess: () => {
       toast.success(directoryStrings.collect.success)
       ;[QueryKey.GymDirectory, QueryKey.Members, QueryKey.Member, QueryKey.MemberPayments, QueryKey.ManagerStats, QueryKey.RevenueSummary].forEach(

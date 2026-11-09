@@ -23,8 +23,20 @@ describe('DirectoryView', () => {
     await userEvent.clear(within(dialog).getByLabelText(/amount received/i))
     await userEvent.type(within(dialog).getByLabelText(/amount received/i), '2500')
     await userEvent.click(within(dialog).getByRole('button', { name: 'Received' }))
-    await waitFor(() => expect(collectedFees).toEqual([{ p_member_id: 'member-9', p_amount: 2500 }]))
+    await waitFor(() => expect(collectedFees).toEqual([{ p_member_id: 'member-9', p_amount: 2500, p_payment_method: 'CASH' }]))
     await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument())
+  })
+
+  it('records an online payment when the payment type is switched to online', async () => {
+    collectedFees.length = 0
+    renderWithProviders(<DirectoryView />)
+    await userEvent.click(await screen.findByRole('button', { name: 'Collect fees: Zain Malik' }))
+    const dialog = await screen.findByRole('dialog', { name: /collect fees/i })
+    await userEvent.clear(within(dialog).getByLabelText(/amount received/i))
+    await userEvent.type(within(dialog).getByLabelText(/amount received/i), '3000')
+    await userEvent.selectOptions(within(dialog).getByLabelText(/payment type/i), 'ONLINE')
+    await userEvent.click(within(dialog).getByRole('button', { name: 'Received' }))
+    await waitFor(() => expect(collectedFees).toEqual([{ p_member_id: 'member-9', p_amount: 3000, p_payment_method: 'ONLINE' }]))
   })
 
   it('does not send a fee without an amount', async () => {

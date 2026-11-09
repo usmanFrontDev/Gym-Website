@@ -5,6 +5,7 @@ import { Modal } from '@/components/common/Modal'
 import { FormDatePicker } from '@/components/form/FormDatePicker'
 import { FormInput } from '@/components/form/FormInput'
 import { FormSelect } from '@/components/form/FormSelect'
+import { paymentMethodStrings } from '@/constants/strings'
 import { usePlans, useRecordPayment } from '@/hooks/common/useMembers'
 import { recordPaymentSchema, type RecordPaymentValues } from '@/schemas/common/member.schema'
 import type { Membership } from '@/types/common/member.types'
@@ -29,7 +30,7 @@ export function PaymentDialog({ open, onClose, memberId, membership, canChangePl
   const currentPlan = membership?.plan_code ?? 'MONTHLY'
   const { control, handleSubmit, reset } = useForm<RecordPaymentValues>({
     resolver: zodResolver(recordPaymentSchema),
-    defaultValues: { plan_code: currentPlan, amount: 0, discount: 0, start_date: '' },
+    defaultValues: { plan_code: currentPlan, amount: 0, discount: 0, start_date: '', payment_method: 'CASH' },
   })
   const [planCode, amount, startDate] = useWatch({ control, name: ['plan_code', 'amount', 'start_date'] })
   const samePlan = planCode === membership?.plan_code
@@ -41,7 +42,7 @@ export function PaymentDialog({ open, onClose, memberId, membership, canChangePl
 
   const handlePay = (values: RecordPaymentValues) => {
     record.mutate(
-      { member_id: memberId, amount: values.amount, plan_code: values.plan_code, start_date: values.start_date ?? '', discount: values.discount },
+      { member_id: memberId, amount: values.amount, plan_code: values.plan_code, start_date: values.start_date ?? '', discount: values.discount, payment_method: values.payment_method },
       {
         onSuccess: () => {
           reset()
@@ -56,6 +57,7 @@ export function PaymentDialog({ open, onClose, memberId, membership, canChangePl
       <form onSubmit={handleSubmit(handlePay)} noValidate className="flex flex-col gap-4">
         <FormSelect control={control} name="plan_code" label="Plan" options={options} />
         <FormInput control={control} name="amount" label="Amount received (PKR)" asNumber />
+        <FormSelect control={control} name="payment_method" label={paymentMethodStrings.label} options={[...paymentMethodStrings.options]} />
         <FormInput control={control} name="discount" label="Admission discount (only if admission applies)" asNumber />
         <FormDatePicker control={control} name="start_date" label="Start date (optional, default continues the cycle)" />
         {selected && monthlyDiscount > 0 && selected.months !== null && (
