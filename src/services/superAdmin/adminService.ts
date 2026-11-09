@@ -1,6 +1,6 @@
 import { EdgeFunction, Rpc, Table } from '@/constants/tables'
 import { Role } from '@/constants/roles'
-import type { ExpenseCategoryValue, ExpenseRow, ExpenseSummary, ManagerRow, PayoutRow, RevenueSummary, StaffCredentials, TrainerRow } from '@/types/superAdmin/admin.types'
+import type { ExpenseCategoryValue, ExpenseRow, ExpenseSummary, LedgerData, ManagerRow, PayoutRow, RevenueSummary, StaffCredentials, TrainerRow } from '@/types/superAdmin/admin.types'
 import { AppError } from '../appError'
 import { supabase, unwrap } from '../supabase-client'
 
@@ -60,6 +60,9 @@ export const adminService = {
     return unwrap(
       await supabase.from(Table.Expenses).select('id, category, amount, spent_on, note').gte('spent_on', from).lte('spent_on', to).order('spent_on', { ascending: false }),
     ) as ExpenseRow[]
+  },
+  async ledger(from: string | null, to: string | null): Promise<LedgerData> {
+    return unwrap(await supabase.rpc(Rpc.Ledger, { p_from: from, p_to: to })) as LedgerData
   },
   async expenseSummary(from: string, to: string): Promise<ExpenseSummary> {
     return unwrap(await supabase.rpc(Rpc.ExpenseSummary, { p_from: from, p_to: to })) as ExpenseSummary

@@ -5,5 +5,5 @@ import { Path } from '@/constants/paths'
 export default function MemberDetailPage() {
   const { memberId = '' } = useParams()
   const navigate = useNavigate()
-  return <MemberDetailView memberId={memberId} canChangeTrainer canDelete onDeleted={() => navigate(Path.AdminMembers)} />
+  return <MemberDetailView memberId={memberId} canChangeTrainer canDelete canEdit onDeleted={() => navigate(Path.AdminMembers)} />
 }

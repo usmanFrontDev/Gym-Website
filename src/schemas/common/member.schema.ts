@@ -67,3 +67,7 @@ export const collectFeeSchema = z.object({ amount: moneyField, payment_method: p
   if (value.amount <= 0) ctx.addIssue({ code: 'custom', path: ['amount'], message: 'Enter the amount received' })
 })
 export type CollectFeeValues = z.infer<typeof collectFeeSchema>
+
+/** The owner's correction form: personal details only, never plan, payments or fingerprint. */
+export const editMemberSchema = memberBase.omit({ fingerprint_id: true })
+export type EditMemberValues = z.infer<typeof editMemberSchema>

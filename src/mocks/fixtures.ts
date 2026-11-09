@@ -4,6 +4,7 @@ import type { MemberAttendance } from '@/types/common/attendance.types'
 import type { DirectoryRow } from '@/types/common/directory.types'
 import type { MemberRow, Plan } from '@/types/common/member.types'
 import type { Profile } from '@/types/common/user.types'
+import type { LedgerData } from '@/types/superAdmin/admin.types'
 
 export const adminProfile: Profile = {
   id: 'admin-1', role: Role.SUPER_ADMIN, full_name: 'Gym Owner', father_name: null, cnic: null, phone: null,
@@ -62,3 +63,12 @@ export const discountMembers = [
   { id: 'member-1', full_name: 'Ali Raza', phone: '03001112222', fingerprint_id: '12', monthly_discount: 500 },
   { id: 'member-2', full_name: 'Sara Khan', phone: '03003334444', fingerprint_id: '13', monthly_discount: 0 },
 ]
+
+export const ledgerData: LedgerData = {
+  income: 6000, cash: 2500, online: 3500, expense: 40000, net: -34000, row_count: 3,
+  rows: [
+    { id: 'p1', kind: 'INCOME', day: '2026-11-02', amount: 3500, label: 'Ali Raza', method: 'ONLINE', note: null },
+    { id: 'p2', kind: 'INCOME', day: '2026-11-02', amount: 2500, label: 'Sara Khan', method: 'CASH', note: null },
+    { id: 'e1', kind: 'EXPENSE', day: '2026-11-01', amount: 40000, label: 'RENT', method: null, note: 'Shop rent' },
+  ],
+}

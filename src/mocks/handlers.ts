@@ -1,9 +1,15 @@
 import { http, HttpResponse } from 'msw'
-import { activityRows, adminProfile, directoryRows, discountMembers, gymSettings, memberAttendance, memberRows, plans } from './fixtures'
+import { activityRows, adminProfile, directoryRows, discountMembers, gymSettings, ledgerData, memberAttendance, memberRows, plans } from './fixtures'
 
 const base = 'http://localhost:54321'
 
 /** Fees recorded through the mocked collect_fee RPC, so tests can assert the request. */
+/** Ranges requested through the mocked ledger RPC. */
+export const ledgerRequests: { p_from: string | null; p_to: string | null }[] = []
+
+/** Member edits sent through the mocked update_member RPC. */
+export const updatedMembers: Record<string, string | null>[] = []
+
 export const collectedFees: { p_member_id: string; p_amount: number; p_payment_method: string }[] = []
 
 /** Supabase REST/RPC/auth handlers shared by tests and the optional dev mock mode. */
@@ -43,6 +49,14 @@ export const handlers = [
     const search = (body.p_search ?? '').toLowerCase()
     const rows = directoryRows.filter((r) => r.full_name.toLowerCase().includes(search))
     return HttpResponse.json({ rows, total: rows.length })
+  }),
+  http.post(`${base}/rest/v1/rpc/ledger`, async ({ request }) => {
+    ledgerRequests.push((await request.json()) as { p_from: string | null; p_to: string | null })
+    return HttpResponse.json(ledgerData)
+  }),
+  http.post(`${base}/rest/v1/rpc/update_member`, async ({ request }) => {
+    updatedMembers.push((await request.json()) as Record<string, string | null>)
+    return new HttpResponse(null, { status: 204 })
   }),
   http.post(`${base}/rest/v1/rpc/collect_fee`, async ({ request }) => {
     collectedFees.push((await request.json()) as { p_member_id: string; p_amount: number; p_payment_method: string })

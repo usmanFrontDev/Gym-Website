@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { ConfirmDialog } from '@/components/common/ConfirmDialog'
 import { QueryState } from '@/components/common/QueryState'
 import { PageContainer } from '@/components/ui/PageContainer'
-import { paymentMethodStrings, strings } from '@/constants/strings'
+import { memberEditStrings, paymentMethodStrings, strings } from '@/constants/strings'
 import {
   useDeleteMember, useFreezeMember, useMember, useMemberAssignments, useMemberFreezes, useMemberPayments, usePlans, useResumeMember,
 } from '@/hooks/common/useMembers'
@@ -10,6 +10,7 @@ import { formatDate, formatPkr, todayKarachi } from '@/utils/format'
 import { Button } from './Button'
 import { Badge } from './Badge'
 import { ChangeTrainerDialog } from './ChangeTrainerDialog'
+import { EditMemberDialog } from './EditMemberDialog'
 import { PaymentDialog } from './PaymentDialog'
 import { StatusBadge } from './StatusBadge'
 import { VoidPaymentDialog } from './VoidPaymentDialog'
@@ -18,10 +19,12 @@ interface MemberDetailViewProps {
   memberId: string
   canChangeTrainer: boolean
   canDelete?: boolean
+  /** Owner only: shows Edit details. */
+  canEdit?: boolean
   onDeleted?: () => void
 }
 
-export function MemberDetailView({ memberId, canChangeTrainer, canDelete = false, onDeleted }: MemberDetailViewProps) {
+export function MemberDetailView({ memberId, canChangeTrainer, canDelete = false, canEdit = false, onDeleted }: MemberDetailViewProps) {
   const member = useMember(memberId)
   const payments = useMemberPayments(memberId)
   const freezes = useMemberFreezes(memberId)
@@ -36,6 +39,7 @@ export function MemberDetailView({ memberId, canChangeTrainer, canDelete = false
   const [voidId, setVoidId] = useState<string | null>(null)
   const [confirmFreeze, setConfirmFreeze] = useState(false)
   const [trainerOpen, setTrainerOpen] = useState(false)
+  const [editOpen, setEditOpen] = useState(false)
 
   const handleFreezeClick = () => setConfirmFreeze(true)
   const handleConfirmFreeze = () => freeze.mutate(memberId, { onSuccess: () => setConfirmFreeze(false) })
@@ -75,6 +79,9 @@ export function MemberDetailView({ memberId, canChangeTrainer, canDelete = false
               )}
               {canChangeTrainer && (
                 <Button variant="secondary" onClick={() => setTrainerOpen(true)}>Change trainer</Button>
+              )}
+              {canEdit && (
+                <Button variant="secondary" onClick={() => setEditOpen(true)}>{memberEditStrings.action}</Button>
               )}
               {canDelete && (
                 <Button variant="danger" onClick={handleDeleteClick}>Delete member</Button>
@@ -169,6 +176,7 @@ export function MemberDetailView({ memberId, canChangeTrainer, canDelete = false
               </section>
             </div>
 
+            {canEdit && <EditMemberDialog member={detail.member} open={editOpen} onClose={() => setEditOpen(false)} />}
             <PaymentDialog open={payOpen} onClose={() => setPayOpen(false)} memberId={memberId} membership={membership} canChangePlan={planFinished}
           monthlyDiscount={detail.member.monthly_discount} />
             <VoidPaymentDialog paymentId={voidId} onClose={() => setVoidId(null)} />

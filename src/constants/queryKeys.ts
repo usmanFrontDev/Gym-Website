@@ -17,6 +17,7 @@ export enum QueryKey {
   TrainerStats = 'trainer-stats',
   Expenses = 'expenses',
   ExpenseSummary = 'expense-summary',
+  Ledger = 'ledger',
   Payouts = 'payouts',
   DeviceEnrollment = 'device-enrollment',
   BridgeStatus = 'bridge-status',

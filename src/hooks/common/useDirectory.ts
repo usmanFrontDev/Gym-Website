@@ -20,7 +20,7 @@ export function useCollectFee() {
       directoryService.collectFee(memberId, amount, method),
     onSuccess: () => {
       toast.success(directoryStrings.collect.success)
-      ;[QueryKey.GymDirectory, QueryKey.Members, QueryKey.Member, QueryKey.MemberPayments, QueryKey.ManagerStats, QueryKey.RevenueSummary].forEach(
+      ;[QueryKey.GymDirectory, QueryKey.Members, QueryKey.Member, QueryKey.MemberPayments, QueryKey.ManagerStats, QueryKey.RevenueSummary, QueryKey.Ledger].forEach(
         (key) => queryClient.invalidateQueries({ queryKey: [key] }),
       )
     },

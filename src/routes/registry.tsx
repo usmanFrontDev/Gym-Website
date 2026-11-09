@@ -29,7 +29,7 @@ export const routeRegistry: RouteEntry[] = [
   { path: Path.AdminManagerDetail, element: page(() => import('@/pages/superAdmin/ManagerDetailPage')), roles: ADMIN },
   { path: Path.AdminTrainers, element: page(() => import('@/pages/superAdmin/TrainersPage')), roles: ADMIN, nav: { label: strings.nav.trainers, icon: Dumbbell } },
   { path: Path.AdminPlans, element: page(() => import('@/pages/superAdmin/PlansPage')), roles: ADMIN, nav: { label: strings.nav.plans, icon: Tags } },
-  { path: Path.AdminExpenses, element: page(() => import('@/pages/superAdmin/ExpensesPage')), roles: ADMIN, nav: { label: strings.nav.expenses, icon: Banknote } },
+  { path: Path.AdminLedger, element: page(() => import('@/pages/superAdmin/LedgerPage')), roles: ADMIN, nav: { label: strings.nav.ledger, icon: Banknote } },
 
   // manager
   { path: Path.ManagerDashboard, element: page(() => import('@/pages/manager/DashboardPage')), roles: MANAGER, nav: { label: strings.nav.dashboard, icon: LayoutDashboard } },

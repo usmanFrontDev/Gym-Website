@@ -12,7 +12,7 @@ describe('route registry', () => {
   })
 
   it('keeps money pages SUPER_ADMIN only', () => {
-    expect(entry(Path.AdminExpenses)?.roles).toEqual([Role.SUPER_ADMIN])
+    expect(entry(Path.AdminLedger)?.roles).toEqual([Role.SUPER_ADMIN])
     expect(entry(Path.AdminDashboard)?.roles).toEqual([Role.SUPER_ADMIN])
     expect(entry(Path.AdminManagers)?.roles).toEqual([Role.SUPER_ADMIN])
   })

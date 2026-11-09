@@ -12,7 +12,7 @@ export enum Path {
   AdminManagers = '/admin/managers',
   AdminManagerDetail = '/admin/managers/:managerId',
   AdminTrainers = '/admin/trainers',
-  AdminExpenses = '/admin/expenses',
+  AdminLedger = '/admin/ledger',
   AdminPlans = '/admin/plans',
   AdminAttendance = '/admin/attendance',
   AdminAttendanceDetail = '/admin/attendance/:memberId',

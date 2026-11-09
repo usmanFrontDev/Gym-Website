@@ -40,7 +40,7 @@ export const strings = {
     registerMember: 'Register member',
     managers: 'Managers',
     trainers: 'Trainers',
-    expenses: 'Expenses',
+    ledger: 'Financial ledger',
     attendance: 'Attendance',
     plans: 'Plans',
     settings: 'Settings',
@@ -92,6 +92,33 @@ export const paymentMethodStrings = {
     { value: 'ONLINE', label: 'Online payment' },
   ],
   labels: { CASH: 'Cash', ONLINE: 'Online payment' },
+} as const
+
+export const memberEditStrings = {
+  action: 'Edit details',
+  title: 'Edit member',
+  description: 'Correct the personal details. Plan, payments and fingerprint are not changed here.',
+  save: 'Save changes',
+} as const
+
+export const ledgerStrings = {
+  income: 'Income',
+  expense: 'Expense',
+  totalIncome: 'Total income',
+  totalExpense: 'Total expense',
+  netProfit: 'Net profit',
+  filterExpense: 'Press to show only expenses',
+  showAll: 'Press to show all transactions',
+  addTitle: 'Add expense',
+  addExpense: 'Add expense',
+  pickDay: 'Day',
+  export: 'Export',
+  tableCaption: 'Transactions',
+  views: { daily: 'Daily', monthly: 'Monthly', yearly: 'Yearly', all: 'All time' },
+  transactions: (count: number) => `Transactions (${count})`,
+  range: (from: string | null, to: string | null) =>
+    from && to ? (from === to ? `Showing ${from}` : `Showing ${from} to ${to}`) : 'Showing everything since the start',
+  truncated: (shown: number, count: number) => `Showing the newest ${shown} of ${count} entries. Totals above include all of them.`,
 } as const
 
 export const directoryStrings = {

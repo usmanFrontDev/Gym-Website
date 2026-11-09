@@ -66,3 +66,28 @@ export interface StaffCredentials {
   id?: string
   password: string
 }
+
+export type LedgerKind = 'INCOME' | 'EXPENSE'
+export type LedgerView = 'daily' | 'monthly' | 'yearly' | 'all'
+
+/** One line of the ledger: a membership payment (INCOME, label = member) or an expense (label = category). */
+export interface LedgerRow {
+  id: string
+  kind: LedgerKind
+  day: string
+  amount: number
+  label: string
+  method: 'CASH' | 'ONLINE' | null
+  note: string | null
+}
+
+export interface LedgerData {
+  income: number
+  cash: number
+  online: number
+  expense: number
+  net: number
+  /** Total entries in range; `rows` holds only the newest 1000. */
+  row_count: number
+  rows: LedgerRow[]
+}

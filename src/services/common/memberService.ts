@@ -38,6 +38,17 @@ export interface RecordPaymentInput {
   payment_method: PaymentMethod
 }
 
+export interface UpdateMemberInput {
+  member_id: string
+  full_name: string
+  father_name: string
+  phone: string
+  emergency_contact: string
+  email: string
+  cnic: string
+  address: string
+}
+
 export const memberService = {
   async list(filters: MembersFilters): Promise<MembersPageData> {
     const data = unwrap(
@@ -154,6 +165,21 @@ export const memberService = {
 
   async resume(memberId: string): Promise<void> {
     unwrap(await supabase.rpc(Rpc.ResumeMember, { p_member_id: memberId }))
+  },
+
+  async update(input: UpdateMemberInput): Promise<void> {
+    unwrap(
+      await supabase.rpc(Rpc.UpdateMember, {
+        p_member_id: input.member_id,
+        p_full_name: input.full_name,
+        p_father_name: orNull(input.father_name),
+        p_phone: input.phone,
+        p_emergency_contact: orNull(input.emergency_contact),
+        p_email: orNull(input.email),
+        p_cnic: orNull(input.cnic),
+        p_address: orNull(input.address),
+      }),
+    )
   },
 
   async remove(memberId: string): Promise<void> {

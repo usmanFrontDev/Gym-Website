@@ -38,7 +38,7 @@ function useBillingInvalidation() {
   return () => {
     Object.values([
       QueryKey.Members, QueryKey.Member, QueryKey.MemberPayments, QueryKey.MemberFreezes, QueryKey.MemberAssignments,
-      QueryKey.RevenueSummary, QueryKey.ManagerStats, QueryKey.TrainerStats, QueryKey.Managers, QueryKey.Trainers,
+      QueryKey.RevenueSummary, QueryKey.Ledger, QueryKey.ManagerStats, QueryKey.TrainerStats, QueryKey.Managers, QueryKey.Trainers,
     ]).forEach((key) => queryClient.invalidateQueries({ queryKey: [key] }))
   }
 }
@@ -97,6 +97,18 @@ export function useResumeMember() {
     mutationFn: memberService.resume,
     onSuccess: () => {
       toast.success('Member resumed')
+      invalidate()
+    },
+    onError: (e) => toast.error(e.message),
+  })
+}
+
+export function useUpdateMember() {
+  const invalidate = useBillingInvalidation()
+  return useMutation({
+    mutationFn: memberService.update,
+    onSuccess: () => {
+      toast.success('Member details updated')
       invalidate()
     },
     onError: (e) => toast.error(e.message),

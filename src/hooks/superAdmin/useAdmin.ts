@@ -27,6 +27,9 @@ export function usePayouts(trainerId: string | null) {
 export function useExpenses(from: string, to: string) {
   return useQuery({ queryKey: [QueryKey.Expenses, from, to], queryFn: () => adminService.expenses(from, to) })
 }
+export function useLedger(from: string | null, to: string | null) {
+  return useQuery({ queryKey: [QueryKey.Ledger, from, to], queryFn: () => adminService.ledger(from, to) })
+}
 export function useExpenseSummary(from: string, to: string) {
   return useQuery({ queryKey: [QueryKey.ExpenseSummary, from, to], queryFn: () => adminService.expenseSummary(from, to) })
 }
@@ -97,6 +100,7 @@ export function useAddExpense() {
       toast.success('Expense recorded')
       queryClient.invalidateQueries({ queryKey: [QueryKey.Expenses] })
       queryClient.invalidateQueries({ queryKey: [QueryKey.ExpenseSummary] })
+      queryClient.invalidateQueries({ queryKey: [QueryKey.Ledger] })
       queryClient.invalidateQueries({ queryKey: [QueryKey.RevenueSummary] })
     },
     onError: (e) => toast.error(e.message),
@@ -110,6 +114,7 @@ export function useDeleteExpense() {
       toast.success('Expense deleted')
       queryClient.invalidateQueries({ queryKey: [QueryKey.Expenses] })
       queryClient.invalidateQueries({ queryKey: [QueryKey.ExpenseSummary] })
+      queryClient.invalidateQueries({ queryKey: [QueryKey.Ledger] })
       queryClient.invalidateQueries({ queryKey: [QueryKey.RevenueSummary] })
     },
     onError: (e) => toast.error(e.message),
