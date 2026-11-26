@@ -13,8 +13,8 @@ export function ManagerStatsCards({ managerId }: { managerId?: string }) {
         <KpiCard label="Registered this month" value={s?.registered_month ?? 0} />
         <KpiCard label="Registered total" value={s?.registered_total ?? 0} />
         <KpiCard label="Revenue today" value={formatPkr(s?.revenue_daily ?? 0)} />
-        <KpiCard label="Revenue this month" value={formatPkr(s?.revenue_monthly ?? 0)} />
-        <KpiCard label="Revenue total" value={formatPkr(s?.revenue_total ?? 0)} />
+        {/* <KpiCard label="Revenue this month" value={formatPkr(s?.revenue_monthly ?? 0)} />
+        <KpiCard label="Revenue total" value={formatPkr(s?.revenue_total ?? 0)} /> */}
       </div>
     </QueryState>
   )
